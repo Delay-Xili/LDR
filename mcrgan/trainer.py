@@ -325,7 +325,7 @@ class MCRTrainer(MUltiGPUTrainer):
                                          device, netG_ckpt_file, netD_ckpt_file, print_steps, vis_steps, log_steps,
                                          save_steps, flush_secs)
 
-        self.mcr_gan_loss = MCRGANloss(gam1=cfg.LOSS.GAM1, gam2=cfg.LOSS.GAM2, eps=cfg.LOSS.EPS, numclasses=num_class, mode=mode)
+        self.mcr_gan_loss = MCRGANloss(gam1=cfg.LOSS.GAM1, gam2=cfg.LOSS.GAM2, gam3=cfg.LOSS.GAM3, eps=cfg.LOSS.EPS, numclasses=num_class, mode=mode)
 
     def show(self, imgs, epoch, name):
         if not isinstance(imgs, list):

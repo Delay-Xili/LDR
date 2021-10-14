@@ -39,6 +39,7 @@ _C.LOSS = CN()
 _C.LOSS.MODE = 0  # 0 for LDR-binary, 1 for LDR multi
 _C.LOSS.GAM1 = 1.
 _C.LOSS.GAM2 = 1.
+_C.LOSS.GAM3 = 1.
 _C.LOSS.EPS = 0.5
 
 # training

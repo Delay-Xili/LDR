@@ -1,4 +1,4 @@
-LOG_DIR: 'logs/cifar10_LDR_binary'
+LOG_DIR: 'logs/cifar10_LDR_multi'
 
 CUDNN:
   WORKERS: 4
@@ -12,9 +12,10 @@ MODEL:
   IDEN: True   #  false means mini-gan, true means double the mini-gan
 
 LOSS:
-  MODE: 0      # 0 for LDR-binary, 1 for LDR multi
-  GAM1: 1.0
-  GAM2: 1.0
+  MODE: 1      # 0 for LDR-binary, 1 for LDR multi
+  GAM1: 1.0    #  the parameter for each term in multi objective function
+  GAM2: 1.0    #
+  GAM3: 1.0    #
   EPS: 0.5
 
 TRAIN:
