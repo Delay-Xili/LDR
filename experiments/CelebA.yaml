@@ -1,0 +1,28 @@
+LOG_DIR: 'logs/celebA'
+
+DATA:
+  ROOT: './data/'  # change to your own data directory
+  DATASET: 'celeba'
+
+MODEL:
+  NUM_CLASSES: 0
+
+LOSS:
+  MODE: 0  # 0 for LDR-binary, 1 for LDR multi
+  GAM1: 1.0
+  GAM2: 1.0
+  EPS: 0.5
+
+TRAIN:
+  BATCH_SIZE: 300
+  ITERATION: 450000
+  LR: 0.00015
+  BETA1: 0.0
+  BETA2: 0.9
+  INNER_LOOP: 1  # the number of inner loop for encoder.
+
+# only for evaluation
+EVAL:
+  DATA_SAMPLE: 50000    # the number of samples for evaluation
+  NETD_CKPT: ''         # path to discriminator/encoder ckpt
+  NETG_CKPT: ''         # path to generator ckpt
