@@ -10,6 +10,7 @@ DATA:
 MODEL:
   NUM_CLASSES: 10
   IDEN: True   #  false means mini-gan, true means double the mini-gan
+  INIT: 'mini_dcgan'  # 'mini_dcgan' means follow the pytorch tutorial init, 'kaiming' means kaiming init
 
 LOSS:
   MODE: 1      # 0 for LDR-binary, 1 for LDR multi
@@ -20,7 +21,7 @@ LOSS:
 
 TRAIN:
   BATCH_SIZE: 200
-  ITERATION: 450000
+  ITERATION: 4500
   LR: 0.00015
   BETA1: 0.0
   BETA2: 0.9

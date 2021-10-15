@@ -132,6 +132,15 @@ class DiscriminatorMNIST(dcgan_base.DCGANBaseDiscriminator):
         return F.normalize(self.main(x))
 
 
+def weights_init_mnist_model(m):
+    classname = m.__class__.__name__
+    if classname.find('Conv') != -1:
+        nn.init.normal_(m.weight.data, 0.0, 0.02)
+    elif classname.find('BatchNorm') != -1:
+        nn.init.normal_(m.weight.data, 1.0, 0.02)
+        nn.init.constant_(m.bias.data, 0)
+
+
 def get_models(data_name, device):
 
     if data_name == "cifar10":
@@ -142,9 +151,11 @@ def get_models(data_name, device):
         netD = nn.DataParallel(netD)
     elif data_name == 'mnist':
         netG = GeneratorMNIST().to(device)
+        netG.apply(weights_init_mnist_model)
         netG = nn.DataParallel(netG)
 
         netD = DiscriminatorMNIST().to(device)
+        netD.apply(weights_init_mnist_model)
         netD = nn.DataParallel(netD)
     elif data_name == 'stl10_48':
         netG = sngan.SNGANGenerator48().to(device)

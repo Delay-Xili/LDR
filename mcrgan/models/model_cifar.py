@@ -5,6 +5,15 @@ from torch_mimicry.nets.dcgan import dcgan_base
 from mcrgan.default import _C as cfg
 
 
+def weights_init_mnist_model(m):
+    classname = m.__class__.__name__
+    if classname.find('Conv') != -1:
+        nn.init.normal_(m.weight.data, 0.0, 0.02)
+    elif classname.find('BatchNorm') != -1:
+        nn.init.normal_(m.weight.data, 1.0, 0.02)
+        nn.init.constant_(m.bias.data, 0)
+
+
 class GBlock(nn.Module):
 
     def __init__(self,
@@ -99,6 +108,13 @@ class GeneratorCIFAR(dcgan_base.DCGANBaseGenerator):
             nn.Tanh()
         )
 
+        if cfg.MODEL.INIT == 'mini_dcgan':
+            self.main.apply(weights_init_mnist_model)
+        elif cfg.MODEL.INIT == 'kaiming':
+            pass
+        else:
+            raise ValueError
+
     def forward(self, x):
 
         return self.main(x.view(x.shape[0], -1, 1, 1))
@@ -118,6 +134,13 @@ class DiscriminatorCIFAR(dcgan_base.DCGANBaseDiscriminator):
             nn.Conv2d(ndf * 4, nz, 4, 1, 0, bias=False),
             nn.Flatten()
         )
+
+        if cfg.MODEL.INIT == 'mini_dcgan':
+            self.main.apply(weights_init_mnist_model)
+        elif cfg.MODEL.INIT == 'kaiming':
+            pass
+        else:
+            raise ValueError
 
     def forward(self, x):
 
