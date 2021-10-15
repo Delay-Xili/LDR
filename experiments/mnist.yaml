@@ -1,4 +1,4 @@
-LOG_DIR: 'logs/mnist_LDR_binary'
+LOG_DIR: 'logs/mnist_LDR_multi'
 
 CUDNN:
   WORKERS: 4
@@ -11,9 +11,10 @@ MODEL:
   NUM_CLASSES: 10
 
 LOSS:
-  MODE: 0  # 0 for LDR-binary, 1 for LDR multi
+  MODE: 1  # 0 for LDR-binary, 1 for LDR multi
   GAM1: 1.0
   GAM2: 1.0
+  GAM3: 1.0
   EPS: 0.5
 
 TRAIN:

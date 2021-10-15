@@ -1,4 +1,4 @@
-LOG_DIR: 'logs/cifar10_LDR_multi'
+LOG_DIR: 'logs/cifar10_LDR_multi_double_minigan_gam1_1.0_debug'
 
 CUDNN:
   WORKERS: 4
