@@ -160,7 +160,8 @@ class MCRGANloss(nn.Module):
         elif self.train_mode == 0:
             new_Z = torch.cat((Z, Z_bar), 0)
             new_label = torch.cat((torch.zeros_like(real_label), torch.ones_like(real_label)))
-            errD, empi = self.criterion(new_Z, new_label, 2)
+            errD, extra = self.deltaR(new_Z, new_label, 2)
+            empi = (extra[0], extra[1])
         else:
             raise ValueError()
 
