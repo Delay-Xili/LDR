@@ -2,14 +2,23 @@
 import argparse
 import torch.nn as nn
 import torch.optim as optim
-import pprint
-
+import os
+import yaml
 from mcrgan.default import _C as config
 from mcrgan.default import update_config
 import torch
 from mcrgan.trainer import MCRTrainer
 from mcrgan.datasets import get_dataloader
 from mcrgan.models import get_models
+
+
+def _to_yaml(obj, filename=None, default_flow_style=False,
+             encoding="utf-8", errors="strict",
+             **yaml_kwargs):
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, 'w', encoding=encoding, errors=errors) as f:
+        obj.dump(stream=f, default_flow_style=default_flow_style, **yaml_kwargs)
 
 
 def run_ldr():
@@ -73,6 +82,7 @@ def parse_args():
 if __name__ == '__main__':
 
     parse_args()
+    _to_yaml(config, os.path.join(config.LOG_DIR, 'config.yaml'))
     # pprint.pformat(config)
 
     run_ldr()

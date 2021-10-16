@@ -420,13 +420,13 @@ class MCRTrainer(MUltiGPUTrainer):
                     log_data.add_metric('errG_C', -errG_EC[1].item(), group='generator loss')
 
                 elif self.mcr_gan_loss.train_mode == 1:
-                    log_data.add_metric('errD_iterm1', -errD_EC[0].item(), group='discriminator loss')
-                    log_data.add_metric('errD_iterm2', -errD_EC[1].item(), group='discriminator loss')
-                    log_data.add_metric('errD_iterm3', -errD_EC[2].item(), group='discriminator loss')
+                    log_data.add_metric('errD_item1', -errD_EC[0].item(), group='discriminator loss')
+                    log_data.add_metric('errD_item2', -errD_EC[1].item(), group='discriminator loss')
+                    log_data.add_metric('errD_item3', -errD_EC[2].item(), group='discriminator loss')
 
-                    log_data.add_metric('errG_iterm1', -errG_EC[0].item(), group='generator loss')
-                    log_data.add_metric('errG_iterm2', -errG_EC[1].item(), group='generator loss')
-                    log_data.add_metric('errG_iterm3', -errG_EC[2].item(), group='generator loss')
+                    log_data.add_metric('errG_item1', -errG_EC[0].item(), group='generator loss')
+                    log_data.add_metric('errG_item2', -errG_EC[1].item(), group='generator loss')
+                    log_data.add_metric('errG_item3', -errG_EC[2].item(), group='generator loss')
 
                 else:
                     raise ValueError()

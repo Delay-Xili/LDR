@@ -1,7 +1,7 @@
-LOG_DIR: 'logs/cifar10_LDR_binary'
+LOG_DIR: 'logs/cifar10_LDR_multi'
 
 CUDNN:
-  WORKERS: 4
+  WORKERS: 8
 
 DATA:
   ROOT: './data/'  # change to your own data directory
@@ -13,19 +13,20 @@ MODEL:
   INIT: 'mini_dcgan'  # 'mini_dcgan' means follow the pytorch tutorial init, 'kaiming' means kaiming init  !!! only used for mini_dcgan
 
 LOSS:
-  MODE: 0      # 0 for LDR-binary, 1 for LDR multi
+  MODE: 1      # 0 for LDR-binary, 1 for LDR multi
   GAM1: 1.0    #  the parameter for each term in multi objective function
   GAM2: 1.0    #
   GAM3: 1.0    #
   EPS: 0.5
 
 TRAIN:
-  BATCH_SIZE: 200  # for 200 can be work for binary setting, but not for multi setting.
-  ITERATION: 4500
+  BATCH_SIZE: 2048  # for 200 can be work for binary setting, but not for multi setting.
+  ITERATION: 45000
   LR: 0.00015
   BETA1: 0.0
   BETA2: 0.9
-  INNER_LOOP: 1  # the number of inner loop for encoder.
+  INNER_LOOP: 2  # the number of inner loop for encoder.
+  SHOW_STEPS: 100
 
 # only for evaluation
 EVAL:
