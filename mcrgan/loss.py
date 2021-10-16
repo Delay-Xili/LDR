@@ -72,7 +72,7 @@ class MaximalCodingRateReduction(torch.nn.Module):
 
         total_loss_empi = -discrimn_loss_empi + compress_loss_empi
         return (total_loss_empi,
-                [discrimn_loss_empi.item(), compress_loss_empi.item()])
+                [discrimn_loss_empi, compress_loss_empi])
 
 
 class MCRGANloss(nn.Module):
