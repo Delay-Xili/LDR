@@ -1,4 +1,3 @@
-
 # from __future__ import print_function
 import torchvision.transforms as transforms
 import torch.utils.data as data
@@ -7,6 +6,12 @@ import glob
 import PIL
 import torchvision.datasets as datasets
 from torch_mimicry.datasets.data_utils import load_dataset
+
+
+def infiniteloop(dataloader):
+    while True:
+        for x, y in iter(dataloader):
+            yield x, y
 
 
 class celeba_dataset(data.Dataset):

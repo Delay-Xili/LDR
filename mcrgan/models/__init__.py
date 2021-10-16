@@ -8,13 +8,7 @@ from torch_mimicry.nets.sngan.sngan_128 import SNGANDiscriminator128
 from torch_mimicry.nets.sngan.sngan_48 import SNGANDiscriminator48
 from torch_mimicry.nets.sngan.sngan_32 import SNGANDiscriminator32
 
-from .model_cifar import GeneratorCIFAR, DiscriminatorCIFAR
-
-
-def infiniteloop(dataloader):
-    while True:
-        for x, y in iter(dataloader):
-            yield x, y
+from .model_cifar import get_cifar_model
 
 
 class Norm(nn.Module):
@@ -144,11 +138,10 @@ def weights_init_mnist_model(m):
 def get_models(data_name, device):
 
     if data_name == "cifar10":
-        netG = GeneratorCIFAR().to(device)
-        netG = nn.DataParallel(netG)
 
-        netD = DiscriminatorCIFAR().to(device)
-        netD = nn.DataParallel(netD)
+        netG, netD = get_cifar_model()
+        netG = nn.DataParallel(netG.to(device))
+        netD = nn.DataParallel(netD.to(device))
     elif data_name == 'mnist':
         netG = GeneratorMNIST().to(device)
         netG.apply(weights_init_mnist_model)

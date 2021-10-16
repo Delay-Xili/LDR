@@ -4,6 +4,27 @@ import torch.nn as nn
 from torch_mimicry.nets.dcgan import dcgan_base
 from mcrgan.default import _C as cfg
 
+from torch_mimicry.modules.layers import SNLinear
+from torch_mimicry.nets import sngan
+from torch_mimicry.nets.sngan.sngan_128 import SNGANDiscriminator128
+from torch_mimicry.nets.sngan.sngan_48 import SNGANDiscriminator48
+from torch_mimicry.nets.sngan.sngan_32 import SNGANDiscriminator32
+
+
+class Norm(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x):
+        return F.normalize(x)
+
+
+class customSNGANDiscriminator32(SNGANDiscriminator32):
+
+    def __init__(self, nz=128, ndf=128, **kwargs):
+        super(customSNGANDiscriminator32, self).__init__(ndf, **kwargs)
+        self.nz = nz
+        self.l5 = nn.Sequential(SNLinear(self.ndf, nz), Norm())
 
 def weights_init_mnist_model(m):
     classname = m.__class__.__name__
@@ -19,7 +40,7 @@ class GBlock(nn.Module):
     def __init__(self,
                  in_channels,
                  out_channels,
-                 hidden_channels=cfg.MODEL.IDEN,
+                 hidden_channels=False,
                  upsample=False
                  ):
         super().__init__()
@@ -56,7 +77,7 @@ class DBlock(nn.Module):
     def __init__(self,
                  in_channels,
                  out_channels,
-                 hidden_channels=cfg.MODEL.IDEN,
+                 hidden_channels=False,
                  downsample=False,
                  BN=True):
         super().__init__()
@@ -97,13 +118,13 @@ class DBlock(nn.Module):
 
 class GeneratorCIFAR(dcgan_base.DCGANBaseGenerator):
 
-    def __init__(self, nz=128, ngf=64, bottom_width=4, **kwargs):
+    def __init__(self, nz=128, ngf=64, iden=False, bottom_width=4, **kwargs):
         super().__init__(nz=nz, ngf=ngf, bottom_width=bottom_width, **kwargs)
 
         self.main = nn.Sequential(
-            GBlock(nz, ngf * 8, upsample=False),
-            GBlock(ngf * 8, ngf * 4, upsample=True),
-            GBlock(ngf * 4, ngf * 2, upsample=True),
+            GBlock(nz, ngf * 8, hidden_channels=iden, upsample=False),
+            GBlock(ngf * 8, ngf * 4, hidden_channels=iden, upsample=True),
+            GBlock(ngf * 4, ngf * 2, hidden_channels=iden, upsample=True),
             nn.ConvTranspose2d(ngf * 2, 3, 4, 2, 1, bias=False),
             nn.Tanh()
         )
@@ -122,14 +143,14 @@ class GeneratorCIFAR(dcgan_base.DCGANBaseGenerator):
 
 class DiscriminatorCIFAR(dcgan_base.DCGANBaseDiscriminator):
 
-    def __init__(self, nz=128, ndf=64, **kwargs):
+    def __init__(self, nz=128, ndf=64, iden=False, **kwargs):
         super().__init__(ndf=ndf, **kwargs)
 
         self.nz = nz
         self.main = nn.Sequential(
-            DBlock(3, ndf, downsample=True, BN=False),
-            DBlock(ndf, ndf * 2, downsample=True),
-            DBlock(ndf * 2, ndf * 4, downsample=True),
+            DBlock(3, ndf, hidden_channels=iden, downsample=True, BN=False),
+            DBlock(ndf, ndf * 2, hidden_channels=iden, downsample=True),
+            DBlock(ndf * 2, ndf * 4, hidden_channels=iden, downsample=True),
 
             nn.Conv2d(ndf * 4, nz, 4, 1, 0, bias=False),
             nn.Flatten()
@@ -145,3 +166,21 @@ class DiscriminatorCIFAR(dcgan_base.DCGANBaseDiscriminator):
     def forward(self, x):
 
         return F.normalize(self.main(x))
+
+
+def get_cifar_model():
+
+    if cfg.MODEL.CIFAR_BACKBONE == 'mini_dcgan':
+        netG = GeneratorCIFAR()
+        netD = DiscriminatorCIFAR()
+    elif cfg.MODEL.CIFAR_BACKBONE == 'mini_dcgan_double':
+        netG = GeneratorCIFAR(iden=True)
+        netD = DiscriminatorCIFAR(iden=True)
+    elif cfg.MODEL.CIFAR_BACKBONE == 'mimicry_sngan':
+        netG = sngan.SNGANGenerator32()
+        netD = customSNGANDiscriminator32()
+
+    else:
+        raise ValueError()
+
+    return netG, netD

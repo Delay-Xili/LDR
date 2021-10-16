@@ -29,7 +29,7 @@ _C.DATA.NC = 3
 # common params for NETWORK
 _C.MODEL = CN()
 _C.MODEL.NUM_CLASSES = 10
-_C.MODEL.IDEN = False
+_C.MODEL.CIFAR_BACKBONE = ''
 _C.MODEL.INIT = ''
 # _C.MODEL.NZ = 100  # Size of z latent vector (i.e. size of generator input)
 # _C.MODEL.NGF = 64  # Size of feature maps in generator

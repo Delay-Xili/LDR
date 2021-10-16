@@ -9,7 +9,7 @@ import numpy as np
 
 import torchvision.transforms.functional as FF
 import torchvision.utils as vutils
-from .models import infiniteloop
+from .datasets import infiniteloop
 from .loss import MCRGANloss
 from .default import _C as cfg
 
@@ -410,21 +410,23 @@ class MCRTrainer(MUltiGPUTrainer):
                 self.optG.step()
 
                 log_data.add_metric('errD', -errD.item(), group='discriminator loss')
-                log_data.add_metric('errG', errG.item(), group='generator loss')
+                log_data.add_metric('errG', -errG.item(), group='generator loss')
 
                 if self.mcr_gan_loss.train_mode == 0:
                     log_data.add_metric('errD_E', -errD_EC[0].item(), group='discriminator loss')
                     log_data.add_metric('errD_C', -errD_EC[1].item(), group='discriminator loss')
 
-                    log_data.add_metric('errG_E', errG_EC[0].item(), group='generator loss')
-                    log_data.add_metric('errG_C', errG_EC[1].item(), group='generator loss')
+                    log_data.add_metric('errG_E', -errG_EC[0].item(), group='generator loss')
+                    log_data.add_metric('errG_C', -errG_EC[1].item(), group='generator loss')
 
                 elif self.mcr_gan_loss.train_mode == 1:
                     log_data.add_metric('errD_iterm1', -errD_EC[0].item(), group='discriminator loss')
                     log_data.add_metric('errD_iterm2', -errD_EC[1].item(), group='discriminator loss')
+                    log_data.add_metric('errD_iterm3', -errD_EC[2].item(), group='discriminator loss')
 
-                    log_data.add_metric('errG_iterm1', errG_EC[0].item(), group='generator loss')
-                    log_data.add_metric('errG_iterm2', errG_EC[1].item(), group='generator loss')
+                    log_data.add_metric('errG_iterm1', -errG_EC[0].item(), group='generator loss')
+                    log_data.add_metric('errG_iterm2', -errG_EC[1].item(), group='generator loss')
+                    log_data.add_metric('errG_iterm3', -errG_EC[2].item(), group='generator loss')
 
                 else:
                     raise ValueError()

@@ -1,4 +1,4 @@
-LOG_DIR: 'logs/cifar10_LDR_multi_double_minigan_gam1_1.0_debug'
+LOG_DIR: 'logs/cifar10_LDR_binary'
 
 CUDNN:
   WORKERS: 4
@@ -9,18 +9,18 @@ DATA:
 
 MODEL:
   NUM_CLASSES: 10
-  IDEN: True   #  false means mini-gan, true means double the mini-gan
-  INIT: 'mini_dcgan'  # 'mini_dcgan' means follow the pytorch tutorial init, 'kaiming' means kaiming init
+  CIFAR_BACKBONE: 'mini_dcgan'   #  mini_dcgan  mini_dcgan_double   mimicry_sngan
+  INIT: 'mini_dcgan'  # 'mini_dcgan' means follow the pytorch tutorial init, 'kaiming' means kaiming init  !!! only used for mini_dcgan
 
 LOSS:
-  MODE: 1      # 0 for LDR-binary, 1 for LDR multi
+  MODE: 0      # 0 for LDR-binary, 1 for LDR multi
   GAM1: 1.0    #  the parameter for each term in multi objective function
   GAM2: 1.0    #
   GAM3: 1.0    #
   EPS: 0.5
 
 TRAIN:
-  BATCH_SIZE: 200
+  BATCH_SIZE: 200  # for 200 can be work for binary setting, but not for multi setting.
   ITERATION: 4500
   LR: 0.00015
   BETA1: 0.0
