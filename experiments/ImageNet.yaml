@@ -1,3 +1,5 @@
+#  CUDA_VISIBLE_DEVICES=2,3,4,5 python main.py --cfg experiments/ImageNet.yaml LOG_DIR logs/ImageNet10_LDR_multi_default_bs800
+
 LOG_DIR: 'logs/imagenet_128'
 
 CUDNN:
@@ -9,7 +11,7 @@ DATA:
 
 MODEL:
   NUM_CLASSES: 10
-  IMAGENET_WIDTH: 1024  # model width of sngan, only used in sngan.
+  IMAGENET_WIDTH: 256  # model width of sngan, only used in sngan.
 
 LOSS:
   MODE: 2  # 0 for LDR-binary, 1 for LDR multi, 2 for delta Rz tricks
@@ -19,7 +21,7 @@ LOSS:
   EPS: 0.5
 
 TRAIN:
-  BATCH_SIZE: 400
+  BATCH_SIZE: 800
   ITERATION: 45000
   LR: 0.00015
   BETA1: 0.0
