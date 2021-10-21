@@ -13,7 +13,7 @@ MODEL:
   INIT: 'mini_dcgan'  # 'mini_dcgan' means follow the pytorch tutorial init, 'kaiming' means kaiming init  !!! only used for mini_dcgan
 
 LOSS:
-  MODE: 1      # 0 for LDR-binary, 1 for LDR multi
+  MODE: 2      # 0 for LDR-binary, 1 for LDR multi, 2 for LDR multi deltaRz trick
   GAM1: 1.0    #  the parameter for each term in multi objective function
   GAM2: 1.0    #
   GAM3: 1.0    #

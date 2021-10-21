@@ -143,7 +143,9 @@ class MCRGANloss(nn.Module):
             z_total, (z_discrimn_item, z_compress_item, z_compress_losses, z_scalars) = self.deltaR(Z, real_label,
                                                                                                     self.num_class)
             assert num_inner_loop >= 2
-            if ith_inner_loop + 1 % num_inner_loop != 0:
+            if (ith_inner_loop + 1) % num_inner_loop != 0:
+                # print(f"{ith_inner_loop + 1}/{num_inner_loop}")
+                # print("calculate delta R(z)")
                 return z_total, None
 
             zbar_total, (zbar_discrimn_item, zbar_compress_item, zbar_compress_losses, zbar_scalars) = self.deltaR(
@@ -162,6 +164,7 @@ class MCRGANloss(nn.Module):
             errD = -errD_
 
             empi = empi + [-itemRzjzjbar + 0.25 * sum(z_compress_losses) + 0.25 * sum(zbar_compress_losses)]
+            # print("calculate multi")
 
         elif self.train_mode == 1:
             z_total, (z_discrimn_item, z_compress_item, z_compress_losses, z_scalars) = self.deltaR(Z, real_label, self.num_class)

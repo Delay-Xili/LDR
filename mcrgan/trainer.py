@@ -403,7 +403,7 @@ class MCRTrainer(MUltiGPUTrainer):
                 X_bar = self.netG(torch.reshape(Z, (len(Z), nz)))
                 Z_bar = self.netD(X_bar)
 
-                errG, errG_EC = self.mcr_gan_loss(Z, Z_bar, real_label)
+                errG, errG_EC = self.mcr_gan_loss(Z, Z_bar, real_label, self.n_dis - 1, self.n_dis)
 
                 errG = (-1) * errG
                 errG.backward()
@@ -419,7 +419,7 @@ class MCRTrainer(MUltiGPUTrainer):
                     log_data.add_metric('errG_E', -errG_EC[0].item(), group='generator loss')
                     log_data.add_metric('errG_C', -errG_EC[1].item(), group='generator loss')
 
-                elif self.mcr_gan_loss.train_mode == 1:
+                elif self.mcr_gan_loss.train_mode in [1, 2]:
                     log_data.add_metric('errD_item1', -errD_EC[0].item(), group='discriminator loss')
                     log_data.add_metric('errD_item2', -errD_EC[1].item(), group='discriminator loss')
                     log_data.add_metric('errD_item3', -errD_EC[2].item(), group='discriminator loss')
