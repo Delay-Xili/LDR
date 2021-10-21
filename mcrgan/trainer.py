@@ -385,7 +385,7 @@ class MCRTrainer(MUltiGPUTrainer):
                     Z_bar = self.netD(X_bar.detach())
 
                     # Optimize Delta R(Z)+deltaR(Z')+sum(delta(R(Z,Z'))) by alternating G/D
-                    errD, errD_EC = self.mcr_gan_loss(Z, Z_bar, real_label)
+                    errD, errD_EC = self.mcr_gan_loss(Z, Z_bar, real_label, i, self.n_dis)
 
                     errD.backward()
                     self.optD.step()

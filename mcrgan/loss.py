@@ -88,14 +88,14 @@ class MCRGANloss(nn.Module):
         self.gam3 = gam3
         self.eps = eps
 
-    def forward(self, Z, Z_bar, real_label):
+    def forward(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
 
         # t = time.time()
         # errD, empi = self.old_version(Z, Z_bar, real_label)
         # print("old version time: ", time.time() - t)
 
-        t = time.time()
-        errD, empi = self.fast_version(Z, Z_bar, real_label)
+        # t = time.time()
+        errD, empi = self.fast_version(Z, Z_bar, real_label, ith_inner_loop, num_inner_loop)
         # print("new version time: ", time.time() - t)
 
         # print("errDf = ", errDf)
@@ -135,11 +135,35 @@ class MCRGANloss(nn.Module):
 
         return errD, empi
 
-    def fast_version(self, Z, Z_bar, real_label):
+    def fast_version(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
 
         """ decrease the times of calculate log-det  from 52 to 32"""
 
-        if self.train_mode == 1:
+        if self.train_mode == 2:
+            z_total, (z_discrimn_item, z_compress_item, z_compress_losses, z_scalars) = self.deltaR(Z, real_label,
+                                                                                                    self.num_class)
+            assert num_inner_loop >= 2
+            if ith_inner_loop + 1 % num_inner_loop != 0:
+                return z_total, None
+
+            zbar_total, (zbar_discrimn_item, zbar_compress_item, zbar_compress_losses, zbar_scalars) = self.deltaR(
+                Z_bar, real_label, self.num_class)
+            empi = [z_total, zbar_total]
+
+            itemRzjzjbar = 0.
+            for j in range(self.num_class):
+                new_z = torch.cat((Z[real_label == j], Z_bar[real_label == j]), 0)
+                R_zjzjbar = self.compute_discrimn_loss(new_z.T)
+                itemRzjzjbar += R_zjzjbar
+
+            errD_ = self.gam1 * (z_discrimn_item - z_compress_item) + \
+                    self.gam2 * (zbar_discrimn_item - zbar_compress_item) + \
+                    self.gam3 * (itemRzjzjbar - 0.25 * sum(z_compress_losses) - 0.25 * sum(zbar_compress_losses))
+            errD = -errD_
+
+            empi = empi + [-itemRzjzjbar + 0.25 * sum(z_compress_losses) + 0.25 * sum(zbar_compress_losses)]
+
+        elif self.train_mode == 1:
             z_total, (z_discrimn_item, z_compress_item, z_compress_losses, z_scalars) = self.deltaR(Z, real_label, self.num_class)
             zbar_total, (zbar_discrimn_item, zbar_compress_item, zbar_compress_losses, zbar_scalars) = self.deltaR(Z_bar, real_label, self.num_class)
             empi = [z_total, zbar_total]
