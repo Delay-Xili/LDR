@@ -31,6 +31,7 @@ _C.MODEL = CN()
 _C.MODEL.NUM_CLASSES = 10
 _C.MODEL.CIFAR_BACKBONE = ''
 _C.MODEL.INIT = ''
+_C.MODEL.IMAGENET_WIDTH = 1024
 # _C.MODEL.NZ = 100  # Size of z latent vector (i.e. size of generator input)
 # _C.MODEL.NGF = 64  # Size of feature maps in generator
 # _C.MODEL.NDF = 64  # Size of feature maps in discriminator

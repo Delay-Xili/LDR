@@ -9,6 +9,7 @@ from torch_mimicry.nets.sngan.sngan_48 import SNGANDiscriminator48
 from torch_mimicry.nets.sngan.sngan_32 import SNGANDiscriminator32
 
 from .model_cifar import get_cifar_model
+from mcrgan.default import _C as cfg
 
 
 class Norm(nn.Module):
@@ -157,10 +158,10 @@ def get_models(data_name, device):
         netD = customSNGANDiscriminator48().to(device)
         netD = nn.DataParallel(netD)
     elif data_name in ["celeba", "lsun_bedroom_128", "imagenet_128"]:
-        netG = sngan.SNGANGenerator128().to(device)
+        netG = sngan.SNGANGenerator128(ngf=cfg.MODEL.IMAGENET_WIDTH).to(device)
         netG = nn.DataParallel(netG)
 
-        netD = customSNGANDiscriminator128().to(device)
+        netD = customSNGANDiscriminator128(ndf=cfg.MODEL.IMAGENET_WIDTH).to(device)
         netD = nn.DataParallel(netD)
     else:
         raise ValueError()

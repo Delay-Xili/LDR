@@ -6,9 +6,9 @@ from mcrgan.default import _C as cfg
 
 from torch_mimicry.modules.layers import SNLinear
 from torch_mimicry.nets import sngan
-from torch_mimicry.nets.sngan.sngan_128 import SNGANDiscriminator128
-from torch_mimicry.nets.sngan.sngan_48 import SNGANDiscriminator48
 from torch_mimicry.nets.sngan.sngan_32 import SNGANDiscriminator32
+
+from .model_resnet import Generator, Discriminator
 
 
 class Norm(nn.Module):
@@ -25,6 +25,7 @@ class customSNGANDiscriminator32(SNGANDiscriminator32):
         super(customSNGANDiscriminator32, self).__init__(ndf, **kwargs)
         self.nz = nz
         self.l5 = nn.Sequential(SNLinear(self.ndf, nz), Norm())
+
 
 def weights_init_mnist_model(m):
     classname = m.__class__.__name__
@@ -182,6 +183,11 @@ def get_cifar_model():
         print("building the mimicry_sngan model...")
         netG = sngan.SNGANGenerator32()
         netD = customSNGANDiscriminator32()
+
+    elif cfg.MODEL.CIFAR_BACKBONE == 'work_sngan':
+        print("building the work_sngan model...")
+        netG = Generator(128)
+        netD = Discriminator(128)
 
     else:
         raise ValueError()

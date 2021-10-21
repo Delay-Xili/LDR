@@ -434,12 +434,6 @@ class MCRTrainer(MUltiGPUTrainer):
                 log_data = self.scheduler.step(log_data=log_data,
                                                global_step=global_step)
 
-                if global_step % self.print_steps == 0:
-                    with torch.no_grad():
-                        real = self.netG(torch.reshape(Z[:32], (32, nz))).detach().cpu()
-                        self.show(vutils.make_grid(real, padding=2, normalize=True), global_step, "transcript")
-                        self.show(vutils.make_grid(real_cpu[:32], padding=2, normalize=True), global_step, "input")
-
                 # -------------------------
                 #   Logging and Metrics
                 # -------------------------
@@ -458,8 +452,14 @@ class MCRTrainer(MUltiGPUTrainer):
                     start_time = curr_time
 
                 if global_step % self.vis_steps == 0:
+                    # viz random noise
                     self.logger.vis_images(netG=self.netG.module if isinstance(self.netG, nn.DataParallel) else self.netG,
                                            global_step=global_step)
+                    # viz auto-encoding
+                    with torch.no_grad():
+                        real = self.netG(torch.reshape(Z[:32], (32, nz))).detach().cpu()
+                        self.show(vutils.make_grid(real, padding=2, normalize=True), global_step, "transcript")
+                        self.show(vutils.make_grid(real_cpu[:32], padding=2, normalize=True), global_step, "input")
 
                 if global_step % self.save_steps == 0:
                     print("INFO: Saving checkpoints...")

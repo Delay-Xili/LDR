@@ -1,25 +1,30 @@
 LOG_DIR: 'logs/imagenet_128'
 
+CUDNN:
+  WORKERS: 16
+
 DATA:
-  ROOT: './data/'  # change to your own data directory
+  ROOT: '/data/train_10class_imagenet'  # change to your own data directory
   DATASET: 'imagenet_128'
 
 MODEL:
-  NUM_CLASSES: 1000
+  NUM_CLASSES: 10
+  IMAGENET_WIDTH: 1024  # model width of sngan, only used in sngan.
 
 LOSS:
-  MODE: 0  # 0 for LDR-binary, 1 for LDR multi
+  MODE: 2  # 0 for LDR-binary, 1 for LDR multi, 2 for delta Rz tricks
   GAM1: 1.0
   GAM2: 1.0
+  GAM3: 1.0
   EPS: 0.5
 
 TRAIN:
-  BATCH_SIZE: 300
-  ITERATION: 450000
+  BATCH_SIZE: 400
+  ITERATION: 45000
   LR: 0.00015
   BETA1: 0.0
   BETA2: 0.9
-  INNER_LOOP: 1  # the number of inner loop for encoder.
+  INNER_LOOP: 2  # the number of inner loop for encoder.
 
 # only for evaluation
 EVAL:
