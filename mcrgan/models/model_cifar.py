@@ -6,7 +6,8 @@ from mcrgan.default import _C as cfg
 
 from torch_mimicry.modules.layers import SNLinear
 from torch_mimicry.nets import sngan
-from torch_mimicry.nets.sngan.sngan_32 import SNGANDiscriminator32
+from torch_mimicry.nets.sngan.sngan_32 import SNGANDiscriminator32, SNGANGenerator32
+from torch_mimicry.modules.resblocks import GBlock as mimicry_GBlock
 
 from .model_resnet import Generator, Discriminator
 
@@ -17,6 +18,46 @@ class Norm(nn.Module):
 
     def forward(self, x):
         return F.normalize(x)
+
+
+class GBlock1(mimicry_GBlock):
+
+    def __init__(self, in_channels, out_channels, activation='relu', hidden_channels=None,
+                 upsample=False, num_classes=0, spectral_norm=False):
+        super(GBlock1, self).__init__(in_channels, out_channels, hidden_channels, upsample, num_classes, spectral_norm)
+
+        if activation == 'relu':
+            pass
+        elif activation == 'lrelu':
+            print("building leaky relu")
+            self.activation = nn.LeakyReLU(negative_slope=cfg.MODEL.L_RELU_P)
+        else:
+            raise ValueError()
+
+
+class customSNGANGenerator32(SNGANGenerator32):
+
+    def __init__(self, nz=128, ngf=256, activation='relu', **kwargs):
+        super().__init__(nz=nz, ngf=ngf, bottom_width=4, **kwargs)
+
+        # Build the layers
+        self.l1 = nn.Linear(self.nz, (self.bottom_width**2) * self.ngf)
+        self.block2 = GBlock1(self.ngf, self.ngf, activation=activation, upsample=True)
+        self.block3 = GBlock1(self.ngf, self.ngf, activation=activation, upsample=True)
+        self.block4 = GBlock1(self.ngf, self.ngf, activation=activation, upsample=True)
+        self.b5 = nn.BatchNorm2d(self.ngf)
+        self.c5 = nn.Conv2d(self.ngf, 3, 3, 1, padding=1)
+        if activation == 'relu':
+            self.activation = nn.ReLU(True)
+        elif activation == 'lrelu':
+            print("building leaky relu")
+            self.activation = nn.LeakyReLU(negative_slope=cfg.MODEL.L_RELU_P)
+        else:
+            raise ValueError()
+
+        # Initialise the weights
+        nn.init.xavier_uniform_(self.l1.weight.data, 1.0)
+        nn.init.xavier_uniform_(self.c5.weight.data, 1.0)
 
 
 class customSNGANDiscriminator32(SNGANDiscriminator32):
@@ -182,6 +223,11 @@ def get_cifar_model():
     elif cfg.MODEL.CIFAR_BACKBONE == 'mimicry_sngan':
         print("building the mimicry_sngan model...")
         netG = sngan.SNGANGenerator32()
+        netD = customSNGANDiscriminator32()
+
+    elif cfg.MODEL.CIFAR_BACKBONE == 'lrelu_sngan':
+        print("building the lrelu_sngan model...")
+        netG = customSNGANGenerator32(activation='lrelu')
         netD = customSNGANDiscriminator32()
 
     elif cfg.MODEL.CIFAR_BACKBONE == 'work_sngan':

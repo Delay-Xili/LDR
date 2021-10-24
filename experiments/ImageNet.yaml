@@ -1,4 +1,4 @@
-#  CUDA_VISIBLE_DEVICES=2,3,4,5 python main.py --cfg experiments/ImageNet.yaml LOG_DIR logs/ImageNet10_LDR_multi_default_bs800
+#  CUDA_VISIBLE_DEVICES=6,7,8,9 python main.py --cfg experiments/ImageNet.yaml LOG_DIR logs/ImageNet10_test_speed
 
 LOG_DIR: 'logs/imagenet_128'
 
@@ -27,6 +27,7 @@ TRAIN:
   BETA1: 0.0
   BETA2: 0.9
   INNER_LOOP: 2  # the number of inner loop for encoder.
+  SHOW_STEPS: 10
 
 # only for evaluation
 EVAL:
