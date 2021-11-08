@@ -22,8 +22,8 @@ TRAIN:
   BATCH_SIZE: 2048
   ITERATION: 4500
   LR: 0.00015
-  BETA1: 0.0
-  BETA2: 0.9
+  BETA1: 0.5
+  BETA2: 0.999
   INNER_LOOP: 1  # the number of inner loop for encoder.
 
 # only for evaluation

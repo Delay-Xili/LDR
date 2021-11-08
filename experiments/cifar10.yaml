@@ -1,13 +1,13 @@
-# CUDA_VISIBLE_DEVICES=7 python main.py --cfg experiments/cifar10.yaml LOG_DIR logs/cifar10_LDR_multi_mini_dcgan_repeat1
+# CUDA_VISIBLE_DEVICES=7 python main.py --cfg experiments/cifar10.yaml LOG_DIR logs/cifar10_LDR_multi_mini_dcgan
 
-LOG_DIR: 'logs/cifar10_LDR_multi_mini_dcgan_repeat1'
+LOG_DIR: 'logs/cifar10_LDR_multi_mini_dcgan'
 
 CUDNN:
   WORKERS: 8
 
 DATA:
   ROOT: './data/'  # change to your own data directory
-  DATASET: 'cifar10'
+  DATASET: 'cifar10'  # "cifar10_data_aug"  "cifar10"
 
 MODEL:
   NUM_CLASSES: 10
@@ -23,11 +23,12 @@ LOSS:
   EPS: 0.5
 
 TRAIN:
-  BATCH_SIZE: 1024  # for 200 can be work for binary setting, but not for multi setting.
+  BATCH_SIZE: 1600  # for 200 can be work for binary setting, but not for multi setting.
   ITERATION: 45000
-  LR: 0.00015
-  BETA1: 0.0
-  BETA2: 0.9
+  LR_D: 0.00015
+  LR_G: 0.00015
+  BETA1: 0.5        #  for mini-dcgan, beta1 and beta2 should be 0.5 and 0.999, otherwise, it will collapse.
+  BETA2: 0.999
   INNER_LOOP: 2  # the number of inner loop for encoder.
   SHOW_STEPS: 100
 

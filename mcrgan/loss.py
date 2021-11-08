@@ -83,6 +83,9 @@ class MCRGANloss(nn.Module):
         self.criterion = MaximalCodingRateReduction(eps=eps)
         self.num_class = numclasses
         self.train_mode = mode
+        self.faster_logdet = True
+        if self.faster_logdet:
+            print("faster Brent LDR objective function")
         self.gam1 = gam1
         self.gam2 = gam2
         self.gam3 = gam3
@@ -93,16 +96,19 @@ class MCRGANloss(nn.Module):
         # t = time.time()
         # errD, empi = self.old_version(Z, Z_bar, real_label)
         # print("old version time: ", time.time() - t)
+        # print("old errD", errD)
+        #
+        # t = time.time()
+        # self.faster_logdet = False
+        # errD, empi = self.fast_version(Z, Z_bar, real_label, ith_inner_loop, num_inner_loop)
+        # print("fast version time: ", time.time() - t)
+        # print("fast errD", errD)
 
         # t = time.time()
+        # self.faster_logdet = True
         errD, empi = self.fast_version(Z, Z_bar, real_label, ith_inner_loop, num_inner_loop)
-        # print("new version time: ", time.time() - t)
-
-        # print("errDf = ", errDf)
-        # print("errD =", errD)
-        #
-        # print("empi :", empi)
-        # print("empif :", empif)
+        # print("faster version time: ", time.time() - t)
+        # print("faster errD", errD)
 
         # self.debug(Z, Z_bar, real_label)
 
@@ -221,12 +227,19 @@ class MCRGANloss(nn.Module):
 
         print("===========================")
 
+    def logdet(self, X):
+
+        if self.faster_logdet:
+            return 2 * torch.sum(torch.log(torch.diag(torch.linalg.cholesky(X, upper=True))))
+        else:
+            return torch.logdet(X)
+
     def compute_discrimn_loss(self, Z):
         """Theoretical Discriminative Loss."""
         d, n = Z.shape
         I = torch.eye(d).to(Z.device)
         scalar = d / (n * self.eps)
-        logdet = torch.logdet(I + scalar * Z @ Z.T)
+        logdet = self.logdet(I + scalar * Z @ Z.T)
         return logdet / 2.
 
     def compute_compress_loss(self, Z, Pi):
@@ -239,7 +252,7 @@ class MCRGANloss(nn.Module):
             Z_ = Z[:, Pi[:, j] == 1]
             trPi = Pi[:, j].sum() + 1e-8
             scalar = d / (trPi * self.eps)
-            log_det = torch.logdet(I + scalar * Z_ @ Z_.T)
+            log_det = self.logdet(I + scalar * Z_ @ Z_.T)
             compress_loss.append(log_det)
             scalars.append(trPi / (2 * n))
         return compress_loss, scalars

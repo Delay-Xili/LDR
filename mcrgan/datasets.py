@@ -46,6 +46,18 @@ def get_dataloader(data_name, root, batch_size, num_workers):
 
     if data_name in ["lsun_bedroom_128", "cifar10", "stl10_48"]:
         dataset = load_dataset(root=root, name=data_name)
+
+    elif data_name == "cifar10_data_aug":
+
+        transform_train = transforms.Compose([
+            transforms.RandomCrop(32, padding=4),  #
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ])
+
+        dataset = datasets.CIFAR10(root=root+'/cifar10', train=True, transform=transform_train, download=True)
+
     elif data_name == 'celeba':
         dataset = celeba_dataset(root=root, size=128)
 

@@ -35,8 +35,8 @@ def run_ldr():
     # Define models and optimizers
     netD, netG = get_models(config.DATA.DATASET, device)
 
-    optD = optim.Adam(netD.parameters(), config.TRAIN.LR, betas=(config.TRAIN.BETA1, config.TRAIN.BETA2))
-    optG = optim.Adam(netG.parameters(), config.TRAIN.LR, betas=(config.TRAIN.BETA1, config.TRAIN.BETA2))
+    optD = optim.Adam(netD.parameters(), config.TRAIN.LR_D, betas=(config.TRAIN.BETA1, config.TRAIN.BETA2))
+    optG = optim.Adam(netG.parameters(), config.TRAIN.LR_G, betas=(config.TRAIN.BETA1, config.TRAIN.BETA2))
 
     # Start training
     trainer = MCRTrainer(

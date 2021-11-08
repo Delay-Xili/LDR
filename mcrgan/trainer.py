@@ -365,15 +365,15 @@ class MCRTrainer(MUltiGPUTrainer):
                 data, label = next(iter_dataloader)
                 data_time = time.time() - data_time
 
+                # Format batch and label
+                real_cpu = data.to(self.device)
+                real_label = label.clone().detach()
+
                 for i in range(self.n_dis):
 
                     # Update Discriminator
                     self.netD.zero_grad()
                     self.optD.zero_grad()
-
-                    # Format batch and label
-                    real_cpu = data.to(self.device)
-                    real_label = label.clone().detach()
 
                     # Forward pass real batch through D(X->Z)
                     Z = self.netD(real_cpu)
@@ -393,10 +393,6 @@ class MCRTrainer(MUltiGPUTrainer):
                 # Update Discriminator
                 self.netG.zero_grad()
                 self.optG.zero_grad()
-
-                # Format batch and label
-                real_cpu = data.to(self.device)
-                real_label = label.clone().detach()
 
                 # Repeat (X->Z->X'->Z')
                 Z = self.netD(real_cpu)

@@ -48,7 +48,8 @@ _C.LOSS.EPS = 0.5
 # training
 _C.TRAIN = CN()
 _C.TRAIN.BATCH_SIZE = 128
-_C.TRAIN.LR = 0.00015
+_C.TRAIN.LR_D = 0.00015
+_C.TRAIN.LR_G = 0.00015
 _C.TRAIN.BETA1 = 0.0  # Beta1 hyperparam for Adam optimizers
 _C.TRAIN.BETA2 = 0.9  # Beta2 hyperparam for Adam optimizers
 _C.TRAIN.ITERATION = 450000  # number of total iterations

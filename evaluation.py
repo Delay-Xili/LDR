@@ -217,8 +217,10 @@ def main():
 
     netD_state_dict, netG_state_dict = torch.load(config.EVAL.NETD_CKPT), torch.load(config.EVAL.NETG_CKPT)
 
-    netG.load_state_dict(netG_state_dict["model_state_dict"]).cuda()
-    netD.load_state_dict(netD_state_dict["model_state_dict"]).cuda()
+    netG.module.load_state_dict(netG_state_dict["model_state_dict"])
+    netD.module.load_state_dict(netD_state_dict["model_state_dict"])
+    netG.cuda()
+    netD.cuda()
 
     inception_model = InceptionV3()
 

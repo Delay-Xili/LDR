@@ -71,8 +71,10 @@ class customSNGANDiscriminator32(SNGANDiscriminator32):
 def weights_init_mnist_model(m):
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:
+        # print(classname)
         nn.init.normal_(m.weight.data, 0.0, 0.02)
     elif classname.find('BatchNorm') != -1:
+        # print(classname)
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
 
@@ -210,12 +212,105 @@ class DiscriminatorCIFAR(dcgan_base.DCGANBaseDiscriminator):
         return F.normalize(self.main(x))
 
 
+
+# class GeneratorMNIST(dcgan_base.DCGANBaseGenerator):
+#     r"""
+#     ResNet backbone generator for ResNet DCGAN.
+#
+#     Attributes:
+#         nz (int): Noise dimension for upsampling.
+#         ngf (int): Variable controlling generator feature map sizes.
+#         bottom_width (int): Starting width for upsampling generator output to an image.
+#         loss_type (str): Name of loss to use for GAN loss.
+#     """
+#     def __init__(self, nz=128, ngf=64, bottom_width=4, **kwargs):
+#         super().__init__(nz=nz, ngf=ngf, bottom_width=bottom_width, **kwargs)
+#
+#         self.main = nn.Sequential(
+#             nn.ConvTranspose2d(nz, ngf * 8, 4, 1, 0, bias=False),
+#             nn.BatchNorm2d(ngf * 8),
+#             nn.ReLU(True),
+#             nn.ConvTranspose2d(ngf * 8, ngf * 4, 4, 2, 1, bias=False),
+#             nn.BatchNorm2d(ngf * 4),
+#             nn.ReLU(True),
+#             nn.ConvTranspose2d(ngf * 4, ngf * 2, 4, 2, 1, bias=False),
+#             nn.BatchNorm2d(ngf * 2),
+#             nn.ReLU(True),
+#             nn.ConvTranspose2d(ngf * 2, 3, 4, 2, 1, bias=False),
+#             nn.Tanh()
+#         )
+#
+#     def forward(self, x):
+#         r"""
+#         Feedforwards a batch of noise vectors into a batch of fake images.
+#
+#         Args:
+#             x (Tensor): A batch of noise vectors of shape (N, nz).
+#
+#         Returns:
+#             Tensor: A batch of fake images of shape (N, C, H, W).
+#         """
+#         # h = h.view(x.shape[0], -1, 1, 1)
+#         return self.main(x.view(x.shape[0], -1, 1, 1))
+#
+#
+# class DiscriminatorMNIST(dcgan_base.DCGANBaseDiscriminator):
+#     r"""
+#     ResNet backbone discriminator for ResNet DCGAN.
+#
+#     Attributes:
+#         ndf (int): Variable controlling discriminator feature map sizes.
+#         loss_type (str): Name of loss to use for GAN loss.
+#     """
+#     def __init__(self, nz=128, ndf=64, **kwargs):
+#         super().__init__(ndf=ndf, **kwargs)
+#
+#         self.nz = nz
+#         self.main = nn.Sequential(
+#             nn.Conv2d(3, ndf, 4, 2, 1, bias=False),
+#             nn.LeakyReLU(0.2, inplace=True),
+#             nn.Conv2d(ndf, ndf * 2, 4, 2, 1, bias=False),
+#             nn.BatchNorm2d(ndf * 2),
+#             nn.LeakyReLU(0.2, inplace=True),
+#             nn.Conv2d(ndf * 2, ndf * 4, 4, 2, 1, bias=False),
+#             nn.BatchNorm2d(ndf * 4),
+#             nn.LeakyReLU(0.2, inplace=True),
+#             nn.Conv2d(ndf * 4, nz, 4, 1, 0, bias=False),
+#             nn.Flatten()  # new
+#             # nn.LeakyReLU(0.2, inplace=True), #New
+#             # nn.Linear(ndf, ndf, bias=False)
+#             # nn.Sigmoid()
+#         )
+#
+#     def forward(self, x):
+#         r"""
+#         Feedforwards a batch of real/fake images and produces a batch of GAN logits.
+#
+#         Args:
+#             x (Tensor): A batch of images of shape (N, C, H, W).
+#
+#         Returns:
+#             Tensor: A batch of GAN logits of shape (N, 1).
+#         """
+#         return F.normalize(self.main(x))
+
+
+
+
 def get_cifar_model():
 
     if cfg.MODEL.CIFAR_BACKBONE == 'mini_dcgan':
         print("building the mini_dcgan model...")
         netG = GeneratorCIFAR()
         netD = DiscriminatorCIFAR()
+
+    # elif cfg.MODEL.CIFAR_BACKBONE == "mini_dcgan_debug":
+    #     print("building the mini_dcgan mnist version...")
+    #     netG = GeneratorMNIST()
+    #     netG.apply(weights_init_mnist_model)
+    #     netD = DiscriminatorMNIST()
+    #     netD.apply(weights_init_mnist_model)
+
     elif cfg.MODEL.CIFAR_BACKBONE == 'mini_dcgan_double':
         print("building the mini_dcgan_double model...")
         netG = GeneratorCIFAR(iden=True)
