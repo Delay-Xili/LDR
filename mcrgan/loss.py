@@ -77,18 +77,19 @@ class MaximalCodingRateReduction(torch.nn.Module):
 
 class MCRGANloss(nn.Module):
 
-    def __init__(self, gam1=1., gam2=1., gam3=1., eps=0.5, numclasses=1000, mode=1):
+    def __init__(self, gam1=1., gam2=1., gam3=1., eps=0.5, numclasses=1000, mode=1, rho=None):
         super(MCRGANloss, self).__init__()
 
         self.criterion = MaximalCodingRateReduction(eps=eps)
         self.num_class = numclasses
         self.train_mode = mode
-        self.faster_logdet = True
+        self.faster_logdet = False
         if self.faster_logdet:
             print("faster Brent LDR objective function")
         self.gam1 = gam1
         self.gam2 = gam2
         self.gam3 = gam3
+        self.rho = rho
         self.eps = eps
 
     def forward(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
@@ -140,6 +141,59 @@ class MCRGANloss(nn.Module):
             raise ValueError()
 
         return errD, empi
+
+    def double_loop(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
+
+        # print(Z.size())
+        b, _ = Z.size()
+        raw_Z, aug_Z = torch.split(Z, [int(b / 2), int(b / 2)], dim=0)
+        raw_Z_bar, aug_Z_bar = torch.split(Z_bar, [int(b / 2), int(b / 2)], dim=0)
+
+        # raw_Z, aug_Z = raw_Z.contiguous(), aug_Z.contiguous()
+        # raw_Z_bar, aug_Z_bar = raw_Z_bar.contiguous(), aug_Z_bar.contiguous()
+
+        # calculating the delta R(raw_Z) + delta R(raw_Z_bar) + sum delta R(raw_Z, raw_Z_bar)
+        raw_deltaRz, _ = self.deltaR(raw_Z, real_label, self.num_class)
+        raw_deltaRzbar, _ = self.deltaR(raw_Z_bar, real_label, self.num_class)
+        raw_sum_deltaRzzbar = self.sum_deltaR(raw_Z, raw_Z_bar, real_label)
+
+        # calculating the delta R(aug_Z) + delta R(aug_Z_bar) + sum delta R(aug_Z, aug_Z_bar)
+        aug_deltaRz, _ = self.deltaR(aug_Z, real_label, self.num_class)
+        aug_deltaRzbar, _ = self.deltaR(aug_Z_bar, real_label, self.num_class)
+        aug_sum_deltaRzzbar = self.sum_deltaR(aug_Z, aug_Z_bar, real_label)
+
+        assert num_inner_loop >= 2
+        if (ith_inner_loop + 1) % num_inner_loop != 0:
+            # print(f"{ith_inner_loop + 1}/{num_inner_loop}")
+            # print("calculate delta R(z)")
+            return self.rho[0] * raw_deltaRz + self.rho[3] * aug_deltaRz, None
+
+        sum_deltaR_raw_z_aug_z = self.sum_deltaR(raw_Z, aug_Z, real_label)
+        sum_deltaR_raw_z_aug_zbar = self.sum_deltaR(raw_Z, aug_Z_bar, real_label)
+
+        errD = self.rho[0] * raw_deltaRz + self.rho[1] * raw_deltaRzbar + self.rho[2] * raw_sum_deltaRzzbar + \
+               self.rho[3] * aug_deltaRz + self.rho[4] * aug_deltaRzbar + self.rho[5] * aug_sum_deltaRzzbar + \
+               self.rho[6] * sum_deltaR_raw_z_aug_zbar - \
+               self.rho[7] * sum_deltaR_raw_z_aug_z
+
+        return errD, (
+                   raw_deltaRz, raw_deltaRzbar, raw_sum_deltaRzzbar,
+                   aug_deltaRz, aug_deltaRzbar, aug_sum_deltaRzzbar,
+                   sum_deltaR_raw_z_aug_zbar,
+                   sum_deltaR_raw_z_aug_z
+               )
+
+    def sum_deltaR(self, Z1, Z2, label):
+        term3 = 0.
+        for i in range(self.num_class):
+            new_Z = torch.cat((Z1[label == i], Z2[label == i]), 0)
+            new_label = torch.cat(
+                (torch.zeros_like(label[label == i]),
+                 torch.ones_like(label[label == i]))
+            )
+            loss, _ = self.deltaR(new_Z, new_label, 2)
+            term3 += loss
+        return term3
 
     def fast_version(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
 
@@ -195,6 +249,9 @@ class MCRGANloss(nn.Module):
             new_label = torch.cat((torch.zeros_like(real_label), torch.ones_like(real_label)))
             errD, extra = self.deltaR(new_Z, new_label, 2)
             empi = (extra[0], extra[1])
+
+        elif self.train_mode == 10:
+            errD, empi = self.double_loop(Z, Z_bar, real_label, ith_inner_loop, num_inner_loop)
         else:
             raise ValueError()
 
@@ -252,7 +309,7 @@ class MCRGANloss(nn.Module):
             Z_ = Z[:, Pi[:, j] == 1]
             trPi = Pi[:, j].sum() + 1e-8
             scalar = d / (trPi * self.eps)
-            log_det = self.logdet(I + scalar * Z_ @ Z_.T)
+            log_det = 1. if Pi[:, j].sum() == 0 else self.logdet(I + scalar * Z_ @ Z_.T)
             compress_loss.append(log_det)
             scalars.append(trPi / (2 * n))
         return compress_loss, scalars

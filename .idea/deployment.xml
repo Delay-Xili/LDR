@@ -9,6 +9,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="Copy of project-level server 'omnisky'">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/dxl/Code/LDR" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="omnisky">
         <serverdata>
           <mappings>

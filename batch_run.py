@@ -6,22 +6,39 @@ os.environ['MKL_THREADING_LAYER'] = 'GNU'
 
 
 # Define number of GPUs available
+# N_GPU = [(0, 1), (2, 3), (4, 5)]
 N_GPU = [0, 1]
 
 
 # Put here your job
 def build_cmd():
     # train
+    # base = f'python main.py --cfg experiments/cifar10_2loop_aug.yaml'
+    # cmd = []
+    # combo = [
+    #     # ('1.0,1.0,1.0,0.0,0.0,0.0,0.0,0.0', 'baseline'),
+    #     ('1.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0', 'baseline+only_last_term'),
+    #     ('1.0,1.0,1.0,1.0,1.0,0.0,1.0,1.0', 'no_aug_rzzbar'),
+    #     # ('1.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0', 'only_min_r_raw_z_aug_z'),
+    #     # ('1.0,1.0,1.0,1.0,1.0,1.0,0.0,0.0', 'purely_aug')
+    # ]
+    # # factors
+    # for var1, name in combo:  # num-iteration in ista algorithm
+    #     dir_phase = f' LOG_DIR logs/mini_dcgan_2loop_data_aug_{name}'
+    #     cmd_info = f' LOSS.RHO {var1} '
+    #     cmd.append(base + dir_phase + cmd_info)
+
     base = f'python main.py --cfg experiments/cifar10.yaml'
     cmd = []
     # factors
-    for var1 in [0.00001, 0.00005, 0.0001, 0.00015]:  # num-iteration in ista algorithm
-        for var2 in [1.0, 2.0, 3.0, 4.0]:  # lambda
-            dir_phase = f' LOG_DIR logs/cifar10_LDR_multi_mini_dcgan_dataaug_lrD{var1}_lrGfactor{var2}'
-            cmd_info = f' DATA.DATASET cifar10_data_aug TRAIN.LR_G {var1*var2} TRAIN.LR_D {var1} '
-            cmd.append(base + dir_phase + cmd_info)
+    for var1 in [1.0e-4, 0.5e-4]:  # num-iteration in ista algorithm
+        dir_phase = f' LOG_DIR logs/cifar10_mini_dcgan_nz512_bs8192_lr{var1}'
+        cmd_info = f' MODEL.NZ 512 TRAIN.BATCH_SIZE 8192 TRAIN.LR_D {var1} TRAIN.LR_G {var1} '
+        cmd.append(base + dir_phase + cmd_info)
 
     return cmd
+
+
 
 
 cmd = build_cmd()
@@ -38,8 +55,22 @@ def runner(x):
 
     # current_cmd = cmd[-(x + 1)]
     current_cmd = cmd[x]
+    try:
+        if len(gpu) == 1:
+            gpu_str = gpu
+            # print(gpu_str, current_cmd)
+        elif len(gpu) > 1:
+            gpu_str = f'{gpu[0]}'
+            for i in gpu[1:]:
+                gpu_str = gpu_str + f',{i}'
+            # print("CUDA_VISIBLE_DEVICES={} {}".format(gpu_str, current_cmd))
+        else:
+            raise ValueError()
+
+    except:
+        gpu_str = gpu
     print(gpu, current_cmd)
-    os.system("CUDA_VISIBLE_DEVICES={} {}".format(gpu, current_cmd))
+    os.system("CUDA_VISIBLE_DEVICES={} {}".format(gpu_str, current_cmd))
 
     # return gpu id to queue
     q.put(gpu)

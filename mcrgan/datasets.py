@@ -6,6 +6,7 @@ import glob
 import PIL
 import torchvision.datasets as datasets
 from torch_mimicry.datasets.data_utils import load_dataset
+from typing import Any, Tuple
 
 
 def infiniteloop(dataloader):
@@ -42,6 +43,37 @@ class celeba_dataset(data.Dataset):
         return self.transform(X), 0
 
 
+class Double_CIFAR10(datasets.CIFAR10):
+
+    def __getitem__(self, index: int) -> Tuple[Any, Any]:
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
+        img, target = self.data[index], self.targets[index]
+
+        # doing this so that it is consistent with all other datasets
+        # to return a PIL Image
+        img = PIL.Image.fromarray(img)
+
+        transform = transforms.Compose(
+            [transforms.ToTensor(),
+             transforms.Normalize((0.5,), (0.5,))])
+
+        raw_img = transform(img)
+        aug_img = self.transform(img)
+
+        img = torch.cat([raw_img, aug_img], dim=0)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return img, target
+
+
 def get_dataloader(data_name, root, batch_size, num_workers):
 
     if data_name in ["lsun_bedroom_128", "cifar10", "stl10_48"]:
@@ -57,6 +89,17 @@ def get_dataloader(data_name, root, batch_size, num_workers):
         ])
 
         dataset = datasets.CIFAR10(root=root+'/cifar10', train=True, transform=transform_train, download=True)
+
+    elif data_name == "cifar10_data_aug_loop":
+
+        transform_train = transforms.Compose([
+            transforms.RandomCrop(32, padding=4),  #
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ])
+
+        dataset = Double_CIFAR10(root=root + '/cifar10', train=True, transform=transform_train, download=True)
 
     elif data_name == 'celeba':
         dataset = celeba_dataset(root=root, size=128)

@@ -325,7 +325,7 @@ class MCRTrainer(MUltiGPUTrainer):
                                          device, netG_ckpt_file, netD_ckpt_file, print_steps, vis_steps, log_steps,
                                          save_steps, flush_secs)
 
-        self.mcr_gan_loss = MCRGANloss(gam1=cfg.LOSS.GAM1, gam2=cfg.LOSS.GAM2, gam3=cfg.LOSS.GAM3, eps=cfg.LOSS.EPS, numclasses=num_class, mode=mode)
+        self.mcr_gan_loss = MCRGANloss(gam1=cfg.LOSS.GAM1, gam2=cfg.LOSS.GAM2, gam3=cfg.LOSS.GAM3, eps=cfg.LOSS.EPS, numclasses=num_class, mode=mode, rho=cfg.LOSS.RHO)
 
     def show(self, imgs, epoch, name):
         if not isinstance(imgs, list):
@@ -367,6 +367,12 @@ class MCRTrainer(MUltiGPUTrainer):
 
                 # Format batch and label
                 real_cpu = data.to(self.device)
+                if cfg.DATA.DATASET == 'cifar10_data_aug_loop':
+                    real_cpu = torch.split(real_cpu, [3, 3], dim=1)
+                    # print("real_cup:", real_cpu[0].size())
+                    real_cpu = torch.cat(real_cpu, 0)
+                    # print("real_cup:", real_cpu.size())
+
                 real_label = label.clone().detach()
 
                 for i in range(self.n_dis):
@@ -423,6 +429,15 @@ class MCRTrainer(MUltiGPUTrainer):
                     log_data.add_metric('errG_item1', -errG_EC[0].item(), group='generator loss')
                     log_data.add_metric('errG_item2', -errG_EC[1].item(), group='generator loss')
                     log_data.add_metric('errG_item3', -errG_EC[2].item(), group='generator loss')
+                elif self.mcr_gan_loss.train_mode in [10, ]:
+                    nlist = [
+                        'raw_deltaRz', 'raw_deltaRzbar', 'raw_sum_deltaRzzbar',
+                        'aug_deltaRz', 'aug_deltaRzbar', 'aug_sum_deltaRzzbar',
+                        'sum_deltaR_raw_z_aug_zbar', 'sum_deltaR_raw_z_aug_z'
+                    ]
+                    for i, name in enumerate(nlist):
+                        log_data.add_metric('errD'+name, -errD_EC[i].item(), group='discriminator loss')
+                        log_data.add_metric('errG'+name, -errG_EC[i].item(), group='generator loss')
 
                 else:
                     raise ValueError()
@@ -445,6 +460,7 @@ class MCRTrainer(MUltiGPUTrainer):
                                                      self.print_steps)
                     print("data load time: ", data_time)
                     print(f"[{global_step % len(self.dataloader)}/{len(self.dataloader)}]")
+                    print(self.log_dir)
                     start_time = curr_time
 
                 if global_step % self.vis_steps == 0:

@@ -301,8 +301,8 @@ def get_cifar_model():
 
     if cfg.MODEL.CIFAR_BACKBONE == 'mini_dcgan':
         print("building the mini_dcgan model...")
-        netG = GeneratorCIFAR()
-        netD = DiscriminatorCIFAR()
+        netG = GeneratorCIFAR(nz=cfg.MODEL.NZ)
+        netD = DiscriminatorCIFAR(nz=cfg.MODEL.NZ)
 
     # elif cfg.MODEL.CIFAR_BACKBONE == "mini_dcgan_debug":
     #     print("building the mini_dcgan mnist version...")

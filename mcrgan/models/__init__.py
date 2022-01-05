@@ -138,7 +138,7 @@ def weights_init_mnist_model(m):
 
 def get_models(data_name, device):
 
-    if data_name in ["cifar10", "cifar10_data_aug"]:
+    if data_name in ["cifar10", "cifar10_data_aug", "cifar10_data_aug_loop"]:
 
         netG, netD = get_cifar_model()
         netG = nn.DataParallel(netG.to(device))

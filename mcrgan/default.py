@@ -33,7 +33,7 @@ _C.MODEL.CIFAR_BACKBONE = ''
 _C.MODEL.INIT = ''
 _C.MODEL.L_RELU_P = 0.2
 _C.MODEL.IMAGENET_WIDTH = 1024
-# _C.MODEL.NZ = 100  # Size of z latent vector (i.e. size of generator input)
+_C.MODEL.NZ = 100  # Size of z latent vector (i.e. size of generator input)
 # _C.MODEL.NGF = 64  # Size of feature maps in generator
 # _C.MODEL.NDF = 64  # Size of feature maps in discriminator
 
@@ -44,6 +44,7 @@ _C.LOSS.GAM1 = 1.
 _C.LOSS.GAM2 = 1.
 _C.LOSS.GAM3 = 1.
 _C.LOSS.EPS = 0.5
+_C.LOSS.RHO = (1.0, 1.0)
 
 # training
 _C.TRAIN = CN()
