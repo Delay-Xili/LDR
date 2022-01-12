@@ -61,6 +61,11 @@ def parse_args():
                         required=True,
                         type=str,
                         )
+    parser.add_argument('--ckpt_epochs',
+                        help='the # of ckpt be used',
+                        required=True,
+                        type=int,
+                        )
     parser.add_argument('opts',
                         help="Modify config options using the command-line",
                         default=None,
@@ -68,8 +73,8 @@ def parse_args():
 
     args = parser.parse_args()
     update_config(config, args)
-    #
-    # return args
+
+    return args
 
 
 def get_loader():
@@ -180,12 +185,19 @@ def test_data_aug_combo(n_comp, train_Z, train_labels, test_Z, test_labels, netD
         nearsub(n_comp, zzbar_concate, train_labels_concate, test_Z, test_labels)
 
 
-def main():
+def test_acc():
 
+    # CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg pth/to/config.yaml --ckpt_epochs 45000 EVAL.DATA_SAMPLE 1000
     # -----------------------
-    parse_args()
+    args = parse_args()
     device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
     n_comp = 10
+    root = os.path.dirname(args.cfg)
+    netd_ckpt = f"{root}/checkpoints/netD/netD_{args.ckpt_epochs}_steps.pth"
+    netg_ckpt = f"{root}/checkpoints/netG/netG_{args.ckpt_epochs}_steps.pth"
+
+    print(f"loading netD from {netd_ckpt}")
+    print(f"loading netG from {netg_ckpt}")
 
     # The Batch Size here is the amount of data you want to test your FID
     trainloader_aug, trainloader, testloader = get_loader()
@@ -193,7 +205,7 @@ def main():
     # Define models and optimizers
     netD, netG = get_models(config.DATA.DATASET, device)
 
-    netD_state_dict, netG_state_dict = torch.load(config.EVAL.NETD_CKPT), torch.load(config.EVAL.NETG_CKPT)
+    netD_state_dict, netG_state_dict = torch.load(netd_ckpt), torch.load(netg_ckpt)
 
     netG.module.load_state_dict(netG_state_dict["model_state_dict"])
     netD.module.load_state_dict(netD_state_dict["model_state_dict"])
@@ -201,19 +213,16 @@ def main():
     netD.cuda()
 
     train_X, train_Z, train_X_bar, train_Z_bar, train_labels = extract_features(trainloader, netD, netG)
-    train_X_aug, train_Z_aug, train_X_bar_aug, train_Z_bar_aug, train_labels_aug = extract_features(
-        trainloader_aug, netD, netG)
+    # train_X_aug, train_Z_aug, train_X_bar_aug, train_Z_bar_aug, train_labels_aug = extract_features(
+    #      trainloader_aug, netD, netG)
 
     test_X, test_Z, test_X_bar, test_Z_bar, test_labels = extract_features(testloader, netD, netG)
-
-    # zzbar_concate = torch.cat([train_Z, train_Z_aug], 0)
-    # train_labels_concate = torch.cat([train_labels, train_labels_aug], 0)
 
     print("----------------------------")
     print("Train_z, Test_z")
     nearsub(n_comp, train_Z, train_labels, test_Z, test_labels)
 
-    test_data_aug_combo(n_comp, train_Z, train_labels, test_Z, test_labels, netD, netG)
+    # test_data_aug_combo(n_comp, train_Z, train_labels, test_Z, test_labels, netD, netG)
 
 
 def batch_test_acc():
@@ -292,5 +301,5 @@ def batch_test_acc():
 
 
 if __name__ == '__main__':
-    # main()
-    batch_test_acc()
+    test_acc()
+    # batch_test_acc()

@@ -34,8 +34,8 @@ _C.MODEL.INIT = ''
 _C.MODEL.L_RELU_P = 0.2
 _C.MODEL.IMAGENET_WIDTH = 1024
 _C.MODEL.NZ = 100  # Size of z latent vector (i.e. size of generator input)
-# _C.MODEL.NGF = 64  # Size of feature maps in generator
-# _C.MODEL.NDF = 64  # Size of feature maps in discriminator
+_C.MODEL.NGF = 64  # Size of feature maps in generator
+_C.MODEL.NDF = 64  # Size of feature maps in discriminator
 
 # loss
 _C.LOSS = CN()

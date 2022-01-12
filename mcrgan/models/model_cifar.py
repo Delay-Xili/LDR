@@ -295,14 +295,12 @@ class DiscriminatorCIFAR(dcgan_base.DCGANBaseDiscriminator):
 #         return F.normalize(self.main(x))
 
 
-
-
 def get_cifar_model():
 
     if cfg.MODEL.CIFAR_BACKBONE == 'mini_dcgan':
         print("building the mini_dcgan model...")
-        netG = GeneratorCIFAR(nz=cfg.MODEL.NZ)
-        netD = DiscriminatorCIFAR(nz=cfg.MODEL.NZ)
+        netG = GeneratorCIFAR(nz=cfg.MODEL.NZ, ngf=cfg.MODEL.NGF)
+        netD = DiscriminatorCIFAR(nz=cfg.MODEL.NZ, ndf=cfg.MODEL.NDF)
 
     # elif cfg.MODEL.CIFAR_BACKBONE == "mini_dcgan_debug":
     #     print("building the mini_dcgan mnist version...")
@@ -313,8 +311,8 @@ def get_cifar_model():
 
     elif cfg.MODEL.CIFAR_BACKBONE == 'mini_dcgan_double':
         print("building the mini_dcgan_double model...")
-        netG = GeneratorCIFAR(iden=True)
-        netD = DiscriminatorCIFAR(iden=True)
+        netG = GeneratorCIFAR(nz=cfg.MODEL.NZ, ngf=cfg.MODEL.NGF, iden=True)
+        netD = DiscriminatorCIFAR(nz=cfg.MODEL.NZ, ndf=cfg.MODEL.NDF, iden=True)
     elif cfg.MODEL.CIFAR_BACKBONE == 'mimicry_sngan':
         print("building the mimicry_sngan model...")
         netG = sngan.SNGANGenerator32()

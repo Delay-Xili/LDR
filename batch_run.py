@@ -6,9 +6,9 @@ os.environ['MKL_THREADING_LAYER'] = 'GNU'
 
 
 # Define number of GPUs available
-# N_GPU = [(0, 1), (2, 3), (4, 5)]
-N_GPU = [0, 1]
-
+N_GPU = [(0, 1, 2)]
+# N_GPU = [(4, 5)]
+# N_GPU = [0, 1]
 
 # Put here your job
 def build_cmd():
@@ -27,18 +27,19 @@ def build_cmd():
     #     dir_phase = f' LOG_DIR logs/mini_dcgan_2loop_data_aug_{name}'
     #     cmd_info = f' LOSS.RHO {var1} '
     #     cmd.append(base + dir_phase + cmd_info)
+    #  cifar10_mini_dcgan_scaleup_width128_depthdouble_nz512_bs8192_lr1e-05
 
     base = f'python main.py --cfg experiments/cifar10.yaml'
     cmd = []
     # factors
-    for var1 in [1.0e-4, 0.5e-4]:  # num-iteration in ista algorithm
-        dir_phase = f' LOG_DIR logs/cifar10_mini_dcgan_nz512_bs8192_lr{var1}'
-        cmd_info = f' MODEL.NZ 512 TRAIN.BATCH_SIZE 8192 TRAIN.LR_D {var1} TRAIN.LR_G {var1} '
+    width = 128
+    nz = 512
+    for var1 in [0.1e-4]:  # num-iteration in ista algorithm
+        dir_phase = f' LOG_DIR logs/cifar10_mini_dcgan_scaleup_width128_depthdouble_nz512_bs8192_lr{var1}'
+        cmd_info = f' MODEL.CIFAR_BACKBONE mini_dcgan_double MODEL.NZ {nz} TRAIN.BATCH_SIZE 8192 TRAIN.LR_D {var1} TRAIN.LR_G {var1} MODEL.NDF {width} MODEL.NGF {width}'
         cmd.append(base + dir_phase + cmd_info)
 
     return cmd
-
-
 
 
 cmd = build_cmd()
