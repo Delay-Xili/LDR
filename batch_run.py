@@ -32,11 +32,12 @@ def build_cmd():
     base = f'python main.py --cfg experiments/cifar10.yaml'
     cmd = []
     # factors
-    width = 128
-    nz = 512
-    for var1 in [0.1e-4]:  # num-iteration in ista algorithm
-        dir_phase = f' LOG_DIR logs/cifar10_mini_dcgan_scaleup_width128_depthdouble_nz512_bs8192_lr{var1}'
-        cmd_info = f' MODEL.CIFAR_BACKBONE mini_dcgan_double MODEL.NZ {nz} TRAIN.BATCH_SIZE 8192 TRAIN.LR_D {var1} TRAIN.LR_G {var1} MODEL.NDF {width} MODEL.NGF {width}'
+    width = 64
+    nz = 1024
+    net = 'mini_dcgan'
+    for var1 in [0.5e-4, 0.1e-4, 0.05e-4]:  # num-iteration in ista algorithm
+        dir_phase = f' LOG_DIR logs/cifar10_{net}_width{width}_nz{nz}_bs8192_lr{var1}'
+        cmd_info = f' MODEL.CIFAR_BACKBONE {net} MODEL.NZ {nz} TRAIN.BATCH_SIZE 8192 TRAIN.LR_D {var1} TRAIN.LR_G {var1} MODEL.NDF {width} MODEL.NGF {width}'
         cmd.append(base + dir_phase + cmd_info)
 
     return cmd
