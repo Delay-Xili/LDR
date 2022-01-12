@@ -6,7 +6,7 @@ os.environ['MKL_THREADING_LAYER'] = 'GNU'
 
 
 # Define number of GPUs available
-N_GPU = [(0, 1, 2)]
+N_GPU = [0, 1, 2]
 # N_GPU = [(4, 5)]
 # N_GPU = [0, 1]
 
