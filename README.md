@@ -1,9 +1,11 @@
 # LDR — Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction
 
 This repository contains the official PyTorch implementation of the paper: 
-*[Xili Dai](https://github.com/Delay-Xili), [Shengbang Tong](), Mingyang Li, [Ziyang Li](), [Michael Psenka](), 
+*[Xili Dai](https://github.com/Delay-Xili), [Shengbang Tong](https://tsb0601.github.io/petertongsb/), 
+Mingyang Li, [Ziyang Wu](), [Michael Psenka](https://www.michaelpsenka.io/), 
 [Kwan Ho Ryan Chan](https://ryanchankh.github.io/), Pengyuan Zhai, [Yaodong Yu](https://yaodongyu.github.io/), 
-Xiaojun Yuan, Heung Yeung Shum, [Yi Ma](https://people.eecs.berkeley.edu/~yima/). 
+[Xiaojun Yuan](https://yuan-xiaojun.github.io/Yuan-Xiaojun/), [Heung Yeung Shum](https://www.microsoft.com/en-us/research/people/hshum/), 
+[Yi Ma](https://people.eecs.berkeley.edu/~yima/). 
 ["Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction."](https://arxiv.org/abs/2111.06636) *.
 
 ## Introduction
