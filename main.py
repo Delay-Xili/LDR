@@ -1,6 +1,5 @@
 # from __future__ import print_function
 import argparse
-import torch.nn as nn
 import torch.optim as optim
 import os
 import yaml
@@ -50,7 +49,7 @@ def run_ldr():
         print_steps=config.TRAIN.SHOW_STEPS,
         vis_steps=config.TRAIN.SHOW_STEPS,
         log_steps=config.TRAIN.SHOW_STEPS,
-        save_steps=5000,
+        save_steps=config.TRAIN.SAVE_STEPS,
         dataloader=dataloader,
         log_dir=config.LOG_DIR,
         device=device,
@@ -75,14 +74,10 @@ def parse_args():
 
     args = parser.parse_args()
     update_config(config, args)
-    #
-    # return args
 
 
 if __name__ == '__main__':
 
     parse_args()
     _to_yaml(config, os.path.join(config.LOG_DIR, 'config.yaml'))
-    # pprint.pformat(config)
-
     run_ldr()

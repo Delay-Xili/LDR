@@ -1,78 +1,6 @@
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import time
-
-
-def one_hot(labels_int, n_classes):
-    """Turn labels into one hot vector of K classes. """
-    labels_onehot = torch.zeros(size=(len(labels_int), n_classes)).float()
-    for i, y in enumerate(labels_int):
-        labels_onehot[i, y] = 1.
-    return labels_onehot
-
-
-def label_to_membership(targets, num_classes=None):
-    """Generate a true membership matrix, and assign value to current Pi.
-    Parameters:
-        targets (np.ndarray): matrix with one hot labels
-    Return:
-        Pi: membership matirx, shape (num_classes, num_samples, num_samples)
-    """
-    targets = one_hot(targets, num_classes)
-    num_samples, num_classes = targets.shape
-    Pi = np.zeros(shape=(num_classes, num_samples, num_samples))
-    for j in range(len(targets)):
-        k = np.argmax(targets[j])
-        Pi[k, j, j] = 1.
-    return Pi
-
-
-class MaximalCodingRateReduction(torch.nn.Module):
-    def __init__(self, eps=0.5):
-        super(MaximalCodingRateReduction, self).__init__()
-
-        self.eps = eps
-
-    def compute_discrimn_loss_empirical(self, W):
-        """Empirical Discriminative Loss."""
-        p, m = W.shape
-        I = torch.eye(p).cuda()
-        scalar = p / (m * self.eps)
-        logdet = torch.logdet(I + scalar * W.matmul(W.T))
-        return logdet / 2.
-
-    def compute_compress_loss_empirical(self, W, Pi):
-        """Empirical Compressive Loss."""
-        p, m = W.shape
-        k, _, _ = Pi.shape
-        I = torch.eye(p).cuda()
-        compress_loss = 0.
-        for j in range(k):
-            trPi = torch.trace(Pi[j]) + 1e-8
-            scalar = p / (trPi * self.eps)
-            log_det = torch.logdet(I + scalar * W.matmul(Pi[j]).matmul(W.T))
-            compress_loss += log_det * trPi / m
-        return compress_loss / 2.
-
-    def forward(self, X, Y, num_classes=None):
-        if num_classes is None:
-            num_classes = Y.max() + 1
-        W = X.T
-        try:
-            Pi = label_to_membership(Y.numpy(), num_classes)
-        except:
-            Pi = label_to_membership(Y, num_classes)
-
-        Pi = torch.tensor(Pi, dtype=torch.float32).cuda()
-
-        discrimn_loss_empi = self.compute_discrimn_loss_empirical(W)
-        compress_loss_empi = self.compute_compress_loss_empirical(W, Pi)
-
-        total_loss_empi = -discrimn_loss_empi + compress_loss_empi
-        return (total_loss_empi,
-                [discrimn_loss_empi, compress_loss_empi])
 
 
 class MCRGANloss(nn.Module):
@@ -80,120 +8,76 @@ class MCRGANloss(nn.Module):
     def __init__(self, gam1=1., gam2=1., gam3=1., eps=0.5, numclasses=1000, mode=1, rho=None):
         super(MCRGANloss, self).__init__()
 
-        self.criterion = MaximalCodingRateReduction(eps=eps)
         self.num_class = numclasses
         self.train_mode = mode
         self.faster_logdet = False
-        if self.faster_logdet:
-            print("faster Brent LDR objective function")
         self.gam1 = gam1
         self.gam2 = gam2
         self.gam3 = gam3
-        self.rho = rho
         self.eps = eps
 
     def forward(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
 
         # t = time.time()
-        # errD, empi = self.old_version(Z, Z_bar, real_label)
-        # print("old version time: ", time.time() - t)
-        # print("old errD", errD)
-        #
-        # t = time.time()
-        # self.faster_logdet = False
-        # errD, empi = self.fast_version(Z, Z_bar, real_label, ith_inner_loop, num_inner_loop)
-        # print("fast version time: ", time.time() - t)
-        # print("fast errD", errD)
-
-        # t = time.time()
-        # self.faster_logdet = True
+        # errD, empi = self.old_version(Z, Z_bar, real_label, ith_inner_loop, num_inner_loop)
         errD, empi = self.fast_version(Z, Z_bar, real_label, ith_inner_loop, num_inner_loop)
         # print("faster version time: ", time.time() - t)
         # print("faster errD", errD)
 
-        # self.debug(Z, Z_bar, real_label)
-
         return errD, empi
 
-    def old_version(self, Z, Z_bar, real_label):
+    def old_version(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
 
-        if self.train_mode == 1:
-            loss_z, _ = self.criterion(Z, real_label, self.num_class)
-            loss_h, _ = self.criterion(Z_bar, real_label, self.num_class)
+        """ original version, need to calculate 52 times log-det"""
+        if self.train_mode == 2:
+            loss_z, _ = self.deltaR(Z, real_label, self.num_class)
+            assert num_inner_loop >= 2
+            if (ith_inner_loop + 1) % num_inner_loop != 0:
+                return loss_z, None
+
+            loss_h, _ = self.deltaR(Z_bar, real_label, self.num_class)
             errD = self.gam1 * loss_z + self.gam2 * loss_h
             empi = [loss_z, loss_h]
             term3 = 0.
+
             for i in range(self.num_class):
                 new_Z = torch.cat((Z[real_label == i], Z_bar[real_label == i]), 0)
                 new_label = torch.cat(
                     (torch.zeros_like(real_label[real_label == i]),
                      torch.ones_like(real_label[real_label == i]))
                 )
-                loss, em = self.criterion(new_Z, new_label, 2)
+                loss, _ = self.deltaR(new_Z, new_label, 2)
+                term3 += loss
+            empi = empi + [term3]
+            errD += self.gam3 * term3
+
+        elif self.train_mode == 1:
+
+            loss_z, _ = self.deltaR(Z, real_label, self.num_class)
+            loss_h, _ = self.deltaR(Z_bar, real_label, self.num_class)
+            errD = self.gam1 * loss_z + self.gam2 * loss_h
+            empi = [loss_z, loss_h]
+            term3 = 0.
+
+            for i in range(self.num_class):
+                new_Z = torch.cat((Z[real_label == i], Z_bar[real_label == i]), 0)
+                new_label = torch.cat(
+                    (torch.zeros_like(real_label[real_label == i]),
+                     torch.ones_like(real_label[real_label == i]))
+                )
+                loss, _ = self.deltaR(new_Z, new_label, 2)
                 term3 += loss
             empi = empi + [term3]
             errD += self.gam3 * term3
         elif self.train_mode == 0:
             new_Z = torch.cat((Z, Z_bar), 0)
             new_label = torch.cat((torch.zeros_like(real_label), torch.ones_like(real_label)))
-            errD, empi = self.criterion(new_Z, new_label, 2)
+            errD, em = self.deltaR(new_Z, new_label, 2)
+            empi = (em[0], em[1])
         else:
             raise ValueError()
 
         return errD, empi
-
-    def double_loop(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
-
-        # print(Z.size())
-        b, _ = Z.size()
-        raw_Z, aug_Z = torch.split(Z, [int(b / 2), int(b / 2)], dim=0)
-        raw_Z_bar, aug_Z_bar = torch.split(Z_bar, [int(b / 2), int(b / 2)], dim=0)
-
-        # raw_Z, aug_Z = raw_Z.contiguous(), aug_Z.contiguous()
-        # raw_Z_bar, aug_Z_bar = raw_Z_bar.contiguous(), aug_Z_bar.contiguous()
-
-        # calculating the delta R(raw_Z) + delta R(raw_Z_bar) + sum delta R(raw_Z, raw_Z_bar)
-        raw_deltaRz, _ = self.deltaR(raw_Z, real_label, self.num_class)
-        raw_deltaRzbar, _ = self.deltaR(raw_Z_bar, real_label, self.num_class)
-        raw_sum_deltaRzzbar = self.sum_deltaR(raw_Z, raw_Z_bar, real_label)
-
-        # calculating the delta R(aug_Z) + delta R(aug_Z_bar) + sum delta R(aug_Z, aug_Z_bar)
-        aug_deltaRz, _ = self.deltaR(aug_Z, real_label, self.num_class)
-        aug_deltaRzbar, _ = self.deltaR(aug_Z_bar, real_label, self.num_class)
-        aug_sum_deltaRzzbar = self.sum_deltaR(aug_Z, aug_Z_bar, real_label)
-
-        assert num_inner_loop >= 2
-        if (ith_inner_loop + 1) % num_inner_loop != 0:
-            # print(f"{ith_inner_loop + 1}/{num_inner_loop}")
-            # print("calculate delta R(z)")
-            return self.rho[0] * raw_deltaRz + self.rho[3] * aug_deltaRz, None
-
-        sum_deltaR_raw_z_aug_z = self.sum_deltaR(raw_Z, aug_Z, real_label)
-        sum_deltaR_raw_z_aug_zbar = self.sum_deltaR(raw_Z, aug_Z_bar, real_label)
-
-        errD = self.rho[0] * raw_deltaRz + self.rho[1] * raw_deltaRzbar + self.rho[2] * raw_sum_deltaRzzbar + \
-               self.rho[3] * aug_deltaRz + self.rho[4] * aug_deltaRzbar + self.rho[5] * aug_sum_deltaRzzbar + \
-               self.rho[6] * sum_deltaR_raw_z_aug_zbar - \
-               self.rho[7] * sum_deltaR_raw_z_aug_z
-
-        return errD, (
-                   raw_deltaRz, raw_deltaRzbar, raw_sum_deltaRzzbar,
-                   aug_deltaRz, aug_deltaRzbar, aug_sum_deltaRzzbar,
-                   sum_deltaR_raw_z_aug_zbar,
-                   sum_deltaR_raw_z_aug_z
-               )
-
-    def sum_deltaR(self, Z1, Z2, label):
-        term3 = 0.
-        for i in range(self.num_class):
-            new_Z = torch.cat((Z1[label == i], Z2[label == i]), 0)
-            new_label = torch.cat(
-                (torch.zeros_like(label[label == i]),
-                 torch.ones_like(label[label == i]))
-            )
-            loss, _ = self.deltaR(new_Z, new_label, 2)
-            term3 += loss
-        return term3
 
     def fast_version(self, Z, Z_bar, real_label, ith_inner_loop, num_inner_loop):
 
@@ -256,33 +140,6 @@ class MCRGANloss(nn.Module):
             raise ValueError()
 
         return errD, empi
-
-    def debug(self, Z, Z_bar, real_label):
-
-        print("===========================")
-
-        Pi = F.one_hot(real_label, self.num_class).to(Z.device)
-        z_compress, z_scalars = self.compute_compress_loss(Z.T, Pi)
-        z_bar_compress, z_bar_scalars = self.compute_compress_loss(Z_bar.T, Pi)
-
-        print("z compress", z_compress)
-        print("z_bar compress", z_bar_compress)
-
-        for i in range(self.num_class):
-
-            new_Z = torch.cat(
-                (Z[real_label == i], Z_bar[real_label == i])
-                , 0)
-            new_label = torch.cat(
-                (torch.zeros_like(real_label[real_label == i]),
-                 torch.ones_like(real_label[real_label == i]))
-            )
-            Pi_ = F.one_hot(new_label, 2).to(Z.device)
-
-            zzhat, zzhat_scalars = self.compute_compress_loss(new_Z.T, Pi_)
-            print("z and z_bar compress", zzhat)
-
-        print("===========================")
 
     def logdet(self, X):
 

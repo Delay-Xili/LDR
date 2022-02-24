@@ -1,33 +1,32 @@
-#  CUDA_VISIBLE_DEVICES=6,7,8,9 python main.py --cfg experiments/ImageNet.yaml LOG_DIR logs/ImageNet10_test_speed
-
 LOG_DIR: 'logs/imagenet_128'
 
 CUDNN:
   WORKERS: 16
 
 DATA:
-  ROOT: '/data/train_10class_imagenet'  # change to your own data directory
+  ROOT: './data/'  # change to your own data directory
   DATASET: 'imagenet_128'
 
 MODEL:
-  NUM_CLASSES: 10
-  IMAGENET_WIDTH: 256  # model width of sngan, only used in sngan.
+  NUM_CLASSES: 1000
 
 LOSS:
-  MODE: 2  # 0 for LDR-binary, 1 for LDR multi, 2 for delta Rz tricks
+  MODE: 0  # 0 for LDR-binary, 1 for LDR multi, 2 for delta Rz tricks
   GAM1: 1.0
   GAM2: 1.0
   GAM3: 1.0
   EPS: 0.5
 
 TRAIN:
-  BATCH_SIZE: 800
+  BATCH_SIZE: 300
   ITERATION: 450000
-  LR: 0.00015
+  LR_D: 0.00015
+  LR_G: 0.00015
   BETA1: 0.0
   BETA2: 0.9
-  INNER_LOOP: 2  # the number of inner loop for encoder.
-  SHOW_STEPS: 10
+  INNER_LOOP: 1  # the number of inner loop for encoder.
+  SHOW_STEPS: 100
+  SAVE_STEPS: 5000
 
 # only for evaluation
 EVAL:

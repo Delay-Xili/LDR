@@ -26,6 +26,8 @@ TRAIN:
   BETA1: 0.5
   BETA2: 0.999
   INNER_LOOP: 1  # the number of inner loop for encoder.
+  SHOW_STEPS: 100
+  SAVE_STEPS: 1000
 
 # only for evaluation
 EVAL:

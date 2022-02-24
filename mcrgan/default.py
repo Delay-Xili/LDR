@@ -57,6 +57,7 @@ _C.TRAIN.ITERATION = 450000  # number of total iterations
 _C.TRAIN.INNER_LOOP = 1
 _C.TRAIN.LR_DECAY = 'linear'
 _C.TRAIN.SHOW_STEPS = 100
+_C.TRAIN.SAVE_STEPS = 5000
 
 # evaluation
 _C.EVAL = CN()

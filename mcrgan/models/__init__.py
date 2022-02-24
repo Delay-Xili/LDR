@@ -44,7 +44,6 @@ class customSNGANDiscriminator32(SNGANDiscriminator32):
         self.l5 = nn.Sequential(SNLinear(self.ndf, nz), Norm())
 
 
-
 class GeneratorMNIST(dcgan_base.DCGANBaseGenerator):
     r"""
     ResNet backbone generator for ResNet DCGAN.
@@ -138,8 +137,7 @@ def weights_init_mnist_model(m):
 
 def get_models(data_name, device):
 
-    if data_name in ["cifar10", "cifar10_data_aug", "cifar10_data_aug_loop"]:
-
+    if data_name == "cifar10":
         netG, netD = get_cifar_model()
         netG = nn.DataParallel(netG.to(device))
         netD = nn.DataParallel(netD.to(device))
@@ -147,7 +145,6 @@ def get_models(data_name, device):
         netG = GeneratorMNIST().to(device)
         netG.apply(weights_init_mnist_model)
         netG = nn.DataParallel(netG)
-
         netD = DiscriminatorMNIST().to(device)
         netD.apply(weights_init_mnist_model)
         netD = nn.DataParallel(netD)

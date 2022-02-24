@@ -79,35 +79,36 @@ def parse_args():
 
 def get_loader():
 
-    transform_train = transforms.Compose([
-        # transforms.RandomCrop(32, padding=4),  #
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-    ])
+    if config.DATA.DATASET == 'mnist':
+        transform = transforms.Compose(
+            [transforms.Resize(32),
+             transforms.ToTensor(),
+             transforms.Normalize(0.5, 0.5)])
+        trainset = datasets.MNIST(root=config.DATA.ROOT, train=True, download=True, transform=transform)
+        testset = datasets.MNIST(root=config.DATA.ROOT, train=False, download=True, transform=transform)
 
-    trainset_aug = datasets.CIFAR10(root=config.DATA.ROOT + '/cifar10', train=True, transform=transform_train, download=True)
-    trainloader_aug = torch.utils.data.DataLoader(
-        trainset_aug, batch_size=config.EVAL.DATA_SAMPLE, shuffle=False, num_workers=config.CUDNN.WORKERS)
+    elif config.DATA.DATASET == 'cifar10':
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ])
+        trainset = datasets.CIFAR10(root=config.DATA.ROOT + '/cifar10', train=True, transform=transform,
+                                    download=True)
+        testset = datasets.CIFAR10(
+            root=config.DATA.ROOT + '/cifar10',
+            train=False,
+            transform=transform,
+            download=True)
+    else:
+        raise NotImplementedError()
 
-    transform_test = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-    ])
-    testset = datasets.CIFAR10(
-        root=config.DATA.ROOT + '/cifar10',
-        train=False,
-        transform=transform_test,
-        download=True)
     testloader = torch.utils.data.DataLoader(
         testset, batch_size=config.EVAL.DATA_SAMPLE, shuffle=False, num_workers=config.CUDNN.WORKERS)
 
-    trainset = datasets.CIFAR10(root=config.DATA.ROOT + '/cifar10', train=True, transform=transform_test,
-                                download=True)
     trainloader = torch.utils.data.DataLoader(
         trainset, batch_size=config.EVAL.DATA_SAMPLE, shuffle=False, num_workers=config.CUDNN.WORKERS)
 
-    return trainloader_aug, trainloader, testloader
+    return trainloader, testloader
 
 
 def extract_features(data_loader, encoder, decoder):
@@ -136,55 +137,6 @@ def extract_features(data_loader, encoder, decoder):
     return torch.cat(X_all), torch.cat(Z_all), torch.cat(X_bar_all), torch.cat(Z_bar_all), torch.cat(labels_all)
 
 
-# def scan_zzbar_combo():
-#     print("----------------------------")
-#     print("Train_z, Test_z")
-#     nearsub(n_comp, train_Z, train_labels, test_Z, test_labels)
-#
-#     print("----------------------------")
-#     print("Train_z_bar, Test_z_bar")
-#     nearsub(n_comp, train_Z_bar, train_labels, test_Z_bar, test_labels)
-#
-#     print("----------------------------")
-#     print("Train_z_bar, Test_z")
-#     nearsub(n_comp, train_Z_bar, train_labels, test_Z, test_labels)
-#
-#     print("----------------------------")
-#     print("Train_z, Test_z_bar")
-#     nearsub(n_comp, train_Z, train_labels, test_Z_bar, test_labels)
-#
-#     print("----------------------------")
-#     print("Train_z+Train_z_aug, Test_z")
-#     nearsub(n_comp, zzbar_concate, train_labels_concate, test_Z, test_labels)
-#
-#     print("----------------------------")
-#     print("Train_z_aug, Test_z")
-#     nearsub(n_comp, train_Z_aug, train_labels_aug, test_Z, test_labels)
-
-def test_data_aug_combo(n_comp, train_Z, train_labels, test_Z, test_labels, netD, netG):
-
-    for sigma in [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5, 1.7]:
-        transform_train = transforms.Compose([
-            transforms.GaussianBlur(3, sigma=sigma),  #
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-        ])
-
-        trainset_aug = datasets.CIFAR10(root=config.DATA.ROOT + '/cifar10', train=True, transform=transform_train,
-                                        download=True)
-        trainloader_aug = torch.utils.data.DataLoader(
-            trainset_aug, batch_size=config.EVAL.DATA_SAMPLE, shuffle=False, num_workers=config.CUDNN.WORKERS)
-
-        train_X_aug, train_Z_aug, train_X_bar_aug, train_Z_bar_aug, train_labels_aug = extract_features(
-            trainloader_aug, netD, netG)
-
-        zzbar_concate = torch.cat([train_Z, train_Z_aug], 0)
-        train_labels_concate = torch.cat([train_labels, train_labels_aug], 0)
-
-        print(f"simga: {sigma}")
-        nearsub(n_comp, zzbar_concate, train_labels_concate, test_Z, test_labels)
-
-
 def test_acc():
 
     # CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg pth/to/config.yaml --ckpt_epochs 45000 EVAL.DATA_SAMPLE 1000
@@ -200,7 +152,7 @@ def test_acc():
     print(f"loading netG from {netg_ckpt}")
 
     # The Batch Size here is the amount of data you want to test your FID
-    trainloader_aug, trainloader, testloader = get_loader()
+    trainloader, testloader = get_loader()
 
     # Define models and optimizers
     netD, netG = get_models(config.DATA.DATASET, device)
@@ -213,91 +165,12 @@ def test_acc():
     netD.cuda()
 
     train_X, train_Z, train_X_bar, train_Z_bar, train_labels = extract_features(trainloader, netD, netG)
-    # train_X_aug, train_Z_aug, train_X_bar_aug, train_Z_bar_aug, train_labels_aug = extract_features(
-    #      trainloader_aug, netD, netG)
 
     test_X, test_Z, test_X_bar, test_Z_bar, test_labels = extract_features(testloader, netD, netG)
 
     print("----------------------------")
     print("Train_z, Test_z")
     nearsub(n_comp, train_Z, train_labels, test_Z, test_labels)
-
-    # test_data_aug_combo(n_comp, train_Z, train_labels, test_Z, test_labels, netD, netG)
-
-
-def batch_test_acc():
-
-    test_aug = False
-    final_log_file = '/home/dxl/Code/LDR/logs/all_acc_results.log'
-    head = '%(asctime)-15s %(message)s'
-    logging.basicConfig(filename=str(final_log_file),
-                        format=head)
-    print('=> creating {}'.format(final_log_file))
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-    console = logging.StreamHandler()
-    logging.getLogger('').addHandler(console)
-
-    logger.info("begin")
-
-    # -----------------------
-    parse_args()
-    device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
-    n_comp = 10
-
-    # The Batch Size here is the amount of data you want to test your FID
-    trainloader_aug, trainloader, testloader = get_loader()
-
-    # Define models and optimizers
-    netD, netG = get_models(config.DATA.DATASET, device)
-
-    roots = [# "/home/dxl/Code/LDR/logs/2.cifar10_mini_dcgan_data_aug_gridsearch_lrD_lrGfactor",
-             "/home/dxl/Code/LDR/logs/3.cifar10_mini_dcgan_2loop_data_aug",
-             ]
-
-    steps_dict = {
-        "mini_dcgan_2loop_data_aug_all": 45000,
-        "mini_dcgan_2loop_data_aug_baseline_nodataaug": 45000,
-        "mini_dcgan_2loop_data_aug_no_aug_rzzbar": 45000,
-        "mini_dcgan_2loop_data_aug_only_min_r_raw_z_aug_z": 89,
-        "mini_dcgan_2loop_data_aug_purely_aug": 91,
-    }
-
-    for root in roots:
-        files = sorted(os.listdir(root))
-        logger.info("===============================================")
-        logger.info(root)
-        for name in files:
-            logger.info("------------------------")
-            logger.info(name)
-            logger.info(f"steps: {steps_dict[name]}")
-            netD_ckpt = f"{root}/{name}/checkpoints/netD/netD_{steps_dict[name]}_steps.pth"
-            netG_ckpt = f"{root}/{name}/checkpoints/netG/netG_{steps_dict[name]}_steps.pth"
-            netD_state_dict, netG_state_dict = torch.load(netD_ckpt), torch.load(netG_ckpt)
-
-            netG.module.load_state_dict(netG_state_dict["model_state_dict"])
-            netD.module.load_state_dict(netD_state_dict["model_state_dict"])
-            netG.cuda()
-            netD.cuda()
-
-            train_X, train_Z, train_X_bar, train_Z_bar, train_labels = extract_features(trainloader, netD, netG)
-            test_X, test_Z, test_X_bar, test_Z_bar, test_labels = extract_features(testloader, netD, netG)
-
-            logger.info("Train_z, Test_z")
-            acc_pca, acc_svd = nearsub(n_comp, train_Z, train_labels, test_Z, test_labels)
-            logger.info('PCA: {}'.format(acc_pca))
-            logger.info('SVD: {}'.format(acc_svd))
-
-            if test_aug:
-                train_X_aug, train_Z_aug, train_X_bar_aug, train_Z_bar_aug, train_labels_aug = extract_features(
-                    trainloader_aug, netD, netG)
-                logger.info("Train_z+Train_z_aug, Test_z")
-                acc_pca, acc_svd = nearsub(
-                    n_comp, torch.cat([train_Z, train_Z_aug], 0),
-                    torch.cat([train_labels, train_labels_aug], 0),
-                    test_Z, test_labels)
-                logger.info('PCA: {}'.format(acc_pca))
-                logger.info('SVD: {}'.format(acc_svd))
 
 
 if __name__ == '__main__':

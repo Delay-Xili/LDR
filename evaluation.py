@@ -1,5 +1,5 @@
 from scipy.stats import entropy
-import torch_mimicry.metrics.fid as fid
+import utils.fid as fid
 from utils.inception import InceptionV3
 import numpy as np
 import torch
@@ -176,7 +176,6 @@ def calculate_inception_score(
         inception_score, std = (np.mean(scores), np.std(scores))
     del probs, scores
     return inception_score, std
-
 
 
 def parse_args():
