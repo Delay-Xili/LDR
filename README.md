@@ -53,7 +53,7 @@ We run the experiments on the RTX 3090 with 24GB memories.
 Adjusting the ```CUDA_VISIBLE_DEVICES``` parameter based on your GPU memory.
 
 
-### Evaluating pre-trained Models
+### Pre-trained Models
 
 You can download our trained models from the following links:
 
@@ -70,13 +70,40 @@ You can download our trained models from the following links:
 Each link includes the corresponding results which consist of three files: checkpoints, images, and data. <br>
 **checkpoints**: including all saved checkpoint files of G and D during the training.<br>
 **images**: including all saved input and reconstructed images during the training.<br>
-**data**: including the tensorboard file which recording the change of loss D, loss G, learning rates of G and D.
+**data**: including the tensorboard file which recording the changes of loss D, loss G, learning rates of G and D during the training.
 
-## Evaluation
+### Evaluating the FID and IS score
 
-Evaluating 
+To evaluate the FID and IS score of your checkpoints under ```checkpoints/```, execute 
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python evaluation.py --cfg experiments/dataset.yaml EVAL.NETD_CKPT path/to/netD/ckpt EVAL.NETG_CKPT path/to/netG/ckpt
+CUDA_VISIBLE_DEVICES=0 python evaluation.py --cfg experiments/mnist.yaml EVAL.NETD_CKPT path/to/netD/ckpt EVAL.NETG_CKPT path/to/netG/ckpt
+CUDA_VISIBLE_DEVICES=0 python evaluation.py --cfg experiments/cifar10.yaml EVAL.NETD_CKPT path/to/netD/ckpt EVAL.NETG_CKPT path/to/netG/ckpt
 ```
 
+### Testing the classification accuracy
+
+To test the accuracy of your learned discriminator, execute
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg experiments/mnist.yaml --ckpt_epochs 4500 EVAL.DATA_SAMPLE 1000
+CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg experiments/cifar10.yaml --ckpt_epochs 45000 EVAL.DATA_SAMPLE 1000
+```
+
+### Disentangled visual attributes as principal components
+
+
+
+
+## Citation
+
+If you find LDR useful in your research, please consider citing:
+
+```
+@article{dai2021closed,
+  title={Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction},
+  author={Dai, Xili and Tong, Shengbang and Li, Mingyang and Wu, Ziyang and Chan, Kwan Ho Ryan and Zhai, Pengyuan and Yu, Yaodong and Psenka, Michael and Yuan, Xiaojun and Shum, Heung Yeung and others},
+  journal={arXiv preprint arXiv:2111.06636},
+  year={2021}
+}
+```
