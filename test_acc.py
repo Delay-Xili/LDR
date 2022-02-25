@@ -5,14 +5,13 @@ from mcrgan.datasets import get_dataloader
 from mcrgan.models import get_models
 from mcrgan.default import _C as config
 from mcrgan.default import update_config
-from utils.utils import sort_dataset, compute_accuracy
+from utils.utils import sort_dataset, compute_accuracy, extract_features
 from sklearn.decomposition import PCA
 from sklearn.decomposition import TruncatedSVD
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from tqdm import tqdm
 import os
-import logging
 
 
 def nearsub(n_comp, train_features, train_labels, test_features, test_labels):
@@ -109,32 +108,6 @@ def get_loader():
         trainset, batch_size=config.EVAL.DATA_SAMPLE, shuffle=False, num_workers=config.CUDNN.WORKERS)
 
     return trainloader, testloader
-
-
-def extract_features(data_loader, encoder, decoder):
-
-    X_all = []
-    X_bar_all = []
-    Z_all = []
-    Z_bar_all = []
-    labels_all = []
-    train_bar = tqdm(data_loader, desc="extracting all features from dataset")
-    with torch.no_grad():
-        encoder.eval()
-        decoder.eval()
-        for step, (X, labels) in enumerate(train_bar):
-            Z = encoder(X.cuda())
-            X_bar = decoder(Z.reshape(Z.shape[0], -1, 1, 1))
-            Z_bar = encoder(X_bar.detach())
-
-            X_all.append(X.cpu())
-            Z_all.append(Z.view(-1, Z.shape[1]).cpu())
-            X_bar_all.append(X_bar.cpu())
-            Z_bar_all.append(Z_bar.view(-1, Z_bar.shape[1]).cpu())
-
-            labels_all.append(labels)
-
-    return torch.cat(X_all), torch.cat(Z_all), torch.cat(X_bar_all), torch.cat(Z_bar_all), torch.cat(labels_all)
 
 
 def test_acc():

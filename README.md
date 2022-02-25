@@ -2,10 +2,10 @@
 
 This repository contains the official PyTorch implementation of the paper: 
 *[Xili Dai](https://github.com/Delay-Xili), [Shengbang Tong](https://tsb0601.github.io/petertongsb/), 
-Mingyang Li, [Ziyang Wu](), [Michael Psenka](https://www.michaelpsenka.io/), 
-[Kwan Ho Ryan Chan](https://ryanchankh.github.io/), Pengyuan Zhai, [Yaodong Yu](https://yaodongyu.github.io/), 
-[Xiaojun Yuan](https://yuan-xiaojun.github.io/Yuan-Xiaojun/), [Heung Yeung Shum](https://www.microsoft.com/en-us/research/people/hshum/), 
-[Yi Ma](https://people.eecs.berkeley.edu/~yima/). 
+Mingyang Li, [Ziyang Wu](https://robinwu218.github.io/), [Michael Psenka](https://www.michaelpsenka.io/), 
+[Kwan Ho Ryan Chan](https://ryanchankh.github.io/), [Pengyuan Zhai](https://billyzz.github.io/), 
+[Yaodong Yu](https://yaodongyu.github.io/), [Xiaojun Yuan](https://yuan-xiaojun.github.io/Yuan-Xiaojun/), 
+[Heung Yeung Shum](https://www.microsoft.com/en-us/research/people/hshum/), [Yi Ma](https://people.eecs.berkeley.edu/~yima/). 
 ["Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction."](https://arxiv.org/abs/2111.06636) *.
 
 ## Introduction
@@ -61,8 +61,8 @@ You can download our trained models from the following links:
 
 | Datasets | Models      | Results     |
 | :------: | :---------: | :---------: |
-| MNIST    | mini dcgan  | [link]()    |
-| CIFAR-10 | mini dcgan  | [link]()    |
+| MNIST    | mini dcgan  | [link](https://drive.google.com/drive/folders/1-eu2qDkF91Bd0RfsCc1YSx9X33SD-Ewy?usp=sharing)    |
+| CIFAR-10 | mini dcgan  | [link](https://drive.google.com/drive/folders/1Il2DlJ4KVk6UCa7hgdp5IPu2HDFO3Iz6?usp=sharing)    |
 | CIFAR-10 | sngan32     | [link]()    |
 | STL-10   | sngan48     | [link]()    |
 | CelebA   | sngan128    | [link]()    |
@@ -91,10 +91,6 @@ To test the accuracy of your learned discriminator, execute
 CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg experiments/mnist.yaml --ckpt_epochs 4500 EVAL.DATA_SAMPLE 1000
 CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg experiments/cifar10.yaml --ckpt_epochs 45000 EVAL.DATA_SAMPLE 1000
 ```
-
-### Disentangled visual attributes as principal components
-
-
 
 
 ## Citation

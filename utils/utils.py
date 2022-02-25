@@ -3,6 +3,7 @@ import logging
 import json
 import numpy as np
 import torch
+from tqdm import tqdm
 
 
 def sort_dataset(data, labels, num_classes=10, stack=False):
@@ -28,6 +29,7 @@ def sort_dataset(data, labels, num_classes=10, stack=False):
         sorted_labels = np.hstack(sorted_labels)
     return sorted_data, sorted_labels
 
+
 def init_pipeline(model_dir, headers=None):
     """Initialize folder and .csv logger."""
     # project folder
@@ -42,6 +44,7 @@ def init_pipeline(model_dir, headers=None):
     create_csv(model_dir, 'losses.csv', headers)
     print("project dir: {}".format(model_dir))
 
+
 def create_csv(model_dir, filename, headers):
     """Create .csv file with filename in model_dir, with headers as the first line 
     of the csv. """
@@ -52,11 +55,13 @@ def create_csv(model_dir, filename, headers):
         f.write(','.join(map(str, headers)))
     return csv_path
 
+
 def save_params(model_dir, params):
     """Save params to a .json file. Params is a dictionary of parameters."""
     path = os.path.join(model_dir, 'params.json')
     with open(path, 'w') as f:
         json.dump(params, f, indent=2, sort_keys=True)
+
 
 def update_params(model_dir, pretrain_dir):
     """Updates architecture and feature dimension from pretrain directory 
@@ -67,12 +72,14 @@ def update_params(model_dir, pretrain_dir):
     params['fd'] = old_params['fd']
     save_params(model_dir, params)
 
+
 def load_params(model_dir):
     """Load params.json file in model directory and return dictionary."""
     _path = os.path.join(model_dir, "params.json")
     with open(_path, 'r') as f:
         _dict = json.load(f)
     return _dict
+
 
 def save_state(model_dir, *entries, filename='losses.csv'):
     """Save entries to csv. Entries is list of numbers. """
@@ -81,20 +88,24 @@ def save_state(model_dir, *entries, filename='losses.csv'):
     with open(csv_path, 'a') as f:
         f.write('\n'+','.join(map(str, entries)))
 
+
 def save_ckpt(model_dir, net, epoch):
     """Save PyTorch checkpoint to ./checkpoints/ directory in model directory. """
     torch.save(net.state_dict(), os.path.join(model_dir, 'checkpoints', 
         'model-epoch{}.pt'.format(epoch)))
+
 
 def save_labels(model_dir, labels, epoch):
     """Save labels of a certain epoch to directory. """
     path = os.path.join(model_dir, 'plabels', f'epoch{epoch}.npy')
     np.save(path, labels)
 
+
 def compute_accuracy(y_pred, y_true):
     """Compute accuracy by counting correct classification. """
     assert y_pred.shape == y_true.shape
     return 1 - np.count_nonzero(y_pred - y_true) / y_true.size
+
 
 def clustering_accuracy(labels_true, labels_pred):
     """Compute clustering accuracy."""
@@ -104,6 +115,7 @@ def clustering_accuracy(labels_true, labels_pred):
     value = supervised.contingency_matrix(labels_true, labels_pred)
     [r, c] = linear_sum_assignment(-value)
     return value[r, c].sum() / len(labels_true)
+
 
 def init_pipeline_AE(model_dir, headers=None):
     """Initialize folder and .csv logger."""
@@ -118,3 +130,29 @@ def init_pipeline_AE(model_dir, headers=None):
             "discrimn_loss_t",  "compress_loss_t", "recon_loss", "loss"]
     create_csv(model_dir, 'losses.csv', headers)
     print("project dir: {}".format(model_dir))
+
+
+def extract_features(data_loader, encoder, decoder):
+
+    X_all = []
+    X_bar_all = []
+    Z_all = []
+    Z_bar_all = []
+    labels_all = []
+    train_bar = tqdm(data_loader, desc="extracting all features from dataset")
+    with torch.no_grad():
+        encoder.eval()
+        decoder.eval()
+        for step, (X, labels) in enumerate(train_bar):
+            Z = encoder(X.cuda())
+            X_bar = decoder(Z)
+            Z_bar = encoder(X_bar.detach())
+
+            # X_all.append(X.cpu())
+            Z_all.append(Z.view(-1, Z.shape[1]).cpu())
+            # X_bar_all.append(X_bar.cpu())
+            Z_bar_all.append(Z_bar.view(-1, Z_bar.shape[1]).cpu())
+
+            labels_all.append(labels)
+
+    return None, torch.cat(Z_all), None, torch.cat(Z_bar_all), torch.cat(labels_all)
