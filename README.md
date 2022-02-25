@@ -1,7 +1,7 @@
 # LDR — Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction
 
 This repository contains the official PyTorch implementation of the paper: 
-*[Xili Dai](https://github.com/Delay-Xili), [Shengbang Tong](https://tsb0601.github.io/petertongsb/), 
+[Xili Dai](https://github.com/Delay-Xili), [Shengbang Tong](https://tsb0601.github.io/petertongsb/), 
 Mingyang Li, [Ziyang Wu](https://robinwu218.github.io/), [Michael Psenka](https://www.michaelpsenka.io/), 
 [Kwan Ho Ryan Chan](https://ryanchankh.github.io/), [Pengyuan Zhai](https://billyzz.github.io/), 
 [Yaodong Yu](https://yaodongyu.github.io/), [Xiaojun Yuan](https://yuan-xiaojun.github.io/Yuan-Xiaojun/), 
@@ -63,11 +63,11 @@ You can download our trained models from the following links:
 | :------: | :---------: | :---------: |
 | MNIST    | mini dcgan  | [link](https://drive.google.com/drive/folders/1-eu2qDkF91Bd0RfsCc1YSx9X33SD-Ewy?usp=sharing)    |
 | CIFAR-10 | mini dcgan  | [link](https://drive.google.com/drive/folders/1Il2DlJ4KVk6UCa7hgdp5IPu2HDFO3Iz6?usp=sharing)    |
-| CIFAR-10 | sngan32     | [link]()    |
-| STL-10   | sngan48     | [link]()    |
-| CelebA   | sngan128    | [link]()    |
-| LSUN     | sngan128    | [link]()    |
-| ImageNet | sngan128    | [link]()    |
+| CIFAR-10 | sngan32     | [TBD](https://drive.google.com/drive/folders/1Il2DlJ4KVk6UCa7hgdp5IPu2HDFO3Iz6?usp=sharing)     |
+| STL-10   | sngan48     | [TBD](https://drive.google.com/drive/folders/1V4fsMTUdG-fYOwsY7oW5zBR_rwJY1vcn?usp=sharing)    |
+| CelebA   | sngan128    | [TBD](https://drive.google.com/drive/folders/1GXUsZAYDi3GnckE9KxykHWtRjX7qFuFd?usp=sharing)    |
+| LSUN     | sngan128    | [TBD](https://drive.google.com/drive/folders/10lqlLxP85-uBt7LAEOs_zEb7Yt7lON_u?usp=sharing)    |
+| ImageNet | sngan128    | [TBD](https://drive.google.com/drive/folders/11kikjh2sSgX7OeUxLOCXr-CsTuzMoz6K?usp=sharing)    |
 
 Each link includes the corresponding results which consist of three files: checkpoints, images, and data. <br>
 **checkpoints**: including all saved checkpoint files of G and D during the training.<br>
