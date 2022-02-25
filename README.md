@@ -22,9 +22,9 @@ research in this area.
 
 ## Reproducing Results
 
-### Installation for mimicry
+### Installation for Reproducibility
 
-For the ease of reproducibility, we suggest you install `Miniconda` (or `Anaconda` if you prefer) before executing the following commands.
+For ease of reproducibility, we suggest you install `Miniconda` (or `Anaconda` if you prefer) before executing the following commands.
 
 ```bash
 git clone https://github.com/Delay-Xili/LDR
@@ -37,7 +37,7 @@ mkdir data logs
 ```
 Note: we highly encourage you to use a version of `torch` later then `1.10.0`, since it gives a large speedup when computing `torch.logdet`.
 
-More installation details can be found [here](https://mimicry.readthedocs.io/en/latest/guides/introduction.html)
+More installation details can be found [here](https://mimicry.readthedocs.io/en/latest/guides/introduction.html).
 
 ### Training
 
@@ -51,8 +51,8 @@ CUDA_VISIBLE_DEVICES=0,1,2 python main.py --cfg experiments/LSUN.yaml DATA.ROOT 
 CUDA_VISIBLE_DEVICES=0,1,2 python main.py --cfg experiments/ImageNet.yaml DATA.ROOT pth/to/the/dataset
 ```
 
-Some hyper-parameters can be changed directly in corresponding xxx.yaml file. 
-We run the experiments on the RTX 3090 with 24GB memory. 
+Some hyper-parameters can be changed directly in the corresponding `xxx.yaml` file. 
+We run the experiments on an NVIDIA RTX 3090 with 24GB memory. 
 Adjust the ```CUDA_VISIBLE_DEVICES``` parameter based on your GPU memory.
 
 
@@ -70,7 +70,7 @@ You can download our trained models from the following links:
 | LSUN     | sngan128    | [TBD](https://drive.google.com/drive/folders/10lqlLxP85-uBt7LAEOs_zEb7Yt7lON_u?usp=sharing)    |
 | ImageNet | sngan128    | [TBD](https://drive.google.com/drive/folders/11kikjh2sSgX7OeUxLOCXr-CsTuzMoz6K?usp=sharing)    |
 
-Each link includes the corresponding results, which consist of three files: checkpoints, images, and data. <br>
+Each link includes the corresponding results, which consists of three items: checkpoints, images, and data. <br>
 **checkpoints**: including all saved checkpoint files of the generator and discriminator during the training.<br>
 **images**: including all saved input and reconstructed images during the training.<br>
 **data**: including the Tensorboard file which records the losses and learning rates of discriminator and generator during the training process.
