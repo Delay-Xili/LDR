@@ -6,24 +6,25 @@ Mingyang Li, [Ziyang Wu](https://robinwu218.github.io/), [Michael Psenka](https:
 [Kwan Ho Ryan Chan](https://ryanchankh.github.io/), [Pengyuan Zhai](https://billyzz.github.io/), 
 [Yaodong Yu](https://yaodongyu.github.io/), [Xiaojun Yuan](https://yuan-xiaojun.github.io/Yuan-Xiaojun/), 
 [Heung Yeung Shum](https://www.microsoft.com/en-us/research/people/hshum/), [Yi Ma](https://people.eecs.berkeley.edu/~yima/). 
-["Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction."](https://arxiv.org/abs/2111.06636) *.
+["Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction."](https://arxiv.org/abs/2111.06636).
 
 ## Introduction
-This work proposes a new computational framework for learning a structured generative model for real-world  datasets. 
-In particular we propose to learn a closed-loop transcription between a multi-class multi-dimensional data distribution 
-and a linear discriminative representation (LDR) in the feature space that consists of multiple  independent  multi-dimensional linear  subspaces.
-This new framework unifies the concepts and benefits of Auto-Encoding and GAN and naturally extends them to the settings of 
-learning a both discriminative and generative representation for  multi-class and multi-dimensional real-world data.
-Our extensive experiments on many benchmark imagery datasets demonstrate tremendous potential of this new closed-loop formulation: 
-under fair comparison, visual quality of the learned decoder and classification performance of the encoder is competitive 
-and often better than existing methods based on GAN, VAE, or a combination of both. 
-We hope that this repository serves as a reproducible baseline for future researches in this area. 
+This work proposes a new computational framework for learning a structured generative model for real-world datasets. 
+In particular, we propose a framework for closed-loop data transcription between a multi-class, high-dimensional data 
+distribution and a linear discriminative representation (LDR) in the feature space that consists of multiple independent 
+multi-dimensional linear subspaces. This new framework unifies the concepts and benefits of auto-encoding (AE) and 
+generative adversarial networks (GAN). It naturally extends AE and GAN concepts to the setting of learning a discriminative 
+and generative representation for multi-class, high-dimensional real-world data. Our extensive experiments on many benchmark 
+image datasets demonstrate tremendous potential of this new closed-loop formulation: under fair comparison, visual quality 
+of the learned decoder and classification performance of the encoder is competitive and often better than existing methods 
+based on GAN, VAE, or a combination of both. We hope that this repository serves as a reproducible baseline for future 
+research in this area. 
 
 ## Reproducing Results
 
-### Installation for mimicry
+### Installation for Reproducibility
 
-For the ease of reproducibility, you are suggested to install miniconda (or anaconda if you prefer) before following executing the following commands.
+For ease of reproducibility, we suggest you install `Miniconda` (or `Anaconda` if you prefer) before executing the following commands.
 
 ```bash
 git clone https://github.com/Delay-Xili/LDR
@@ -34,9 +35,9 @@ conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
 pip install git+https://github.com/kwotsin/mimicry.git
 mkdir data logs
 ```
-Note: we highly encourage to use the version of torch later then 1.10.0 since it brings huge speed up on the calculation of the logdet.
+Note: we highly encourage you to use a version of `torch` later then `1.10.0`, since it gives a large speedup when computing `torch.logdet`.
 
-More details of installation can be found [here](https://mimicry.readthedocs.io/en/latest/guides/introduction.html)
+More installation details can be found [here](https://mimicry.readthedocs.io/en/latest/guides/introduction.html).
 
 ### Training
 
@@ -50,9 +51,9 @@ CUDA_VISIBLE_DEVICES=0,1,2 python main.py --cfg experiments/LSUN.yaml DATA.ROOT 
 CUDA_VISIBLE_DEVICES=0,1,2 python main.py --cfg experiments/ImageNet.yaml DATA.ROOT pth/to/the/dataset
 ```
 
-Some detail hyper-parameters can be changed directly in corresponding xxx.yaml file. 
-We run the experiments on the RTX 3090 with 24GB memories. 
-Adjusting the ```CUDA_VISIBLE_DEVICES``` parameter based on your GPU memory.
+Some hyper-parameters can be changed directly in the corresponding `xxx.yaml` file. 
+We run the experiments on an NVIDIA RTX 3090 with 24GB memory. 
+Adjust the ```CUDA_VISIBLE_DEVICES``` parameter based on available GPUs.
 
 
 ### Pre-trained Models
@@ -69,10 +70,10 @@ You can download our trained models from the following links:
 | LSUN     | sngan128    | [TBD](https://drive.google.com/drive/folders/10lqlLxP85-uBt7LAEOs_zEb7Yt7lON_u?usp=sharing)    |
 | ImageNet | sngan128    | [TBD](https://drive.google.com/drive/folders/11kikjh2sSgX7OeUxLOCXr-CsTuzMoz6K?usp=sharing)    |
 
-Each link includes the corresponding results which consist of three files: checkpoints, images, and data. <br>
-**checkpoints**: including all saved checkpoint files of G and D during the training.<br>
+Each link includes the corresponding results, which consists of three items: checkpoints, images, and data. <br>
+**checkpoints**: including all saved checkpoint files of the generator and discriminator during the training.<br>
 **images**: including all saved input and reconstructed images during the training.<br>
-**data**: including the tensorboard file which recording the changes of loss D, loss G, learning rates of G and D during the training.
+**data**: including the Tensorboard file which records the losses and learning rates of discriminator and generator during the training process.
 
 ### Evaluating the FID and IS score
 
