@@ -108,7 +108,7 @@ def plot_linear_gen_on_images(train_Z, netG, model_dir, epoch='end'):
             print(np.linalg.norm(Z_lin, axis=1))
 
             X_recon_lin = netG(
-                torch.tensor(Z_lin, dtype=torch.float).view(lin_sample_num, 128).to(device)).cpu().detach()
+                torch.tensor(Z_lin, dtype=torch.float).view(lin_sample_num, 128).cuda()).cpu().detach()
             lin_gen_images.append(X_recon_lin)
 
         lin_gen_images = torch.cat(lin_gen_images, dim=0)
@@ -128,23 +128,21 @@ def plot_linear_gen_on_images(train_Z, netG, model_dir, epoch='end'):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Ploting')
-    parser.add_argument('--model_dir', default='./logs/visualization/celebA_1', type=str, help='base directory for saving PyTorch model.')
-    parser.add_argument('--epoch', type=int, default=None, help='which epoch for evaluation')
+    parser.add_argument('--model_dir', default='./logs/visualization/celebA_1', type=str, required=True,
+                        help='base directory for saving PyTorch model.')
+    parser.add_argument('--checkpoint_dir', default='./logs/visualization/celebA_1', type=str, required=True,
+                        help='directory to checkpoint.')
+    parser.add_argument('--data_root', default='./data2/celeba/img_align_celeba', type=str, required=True,
+                        help='directory to dataset.')
     parser.add_argument('--comp', type=int, default=127, help='number of components for PCA (default: 30)')
-    parser.add_argument('--class_', type=int, default=None, help='which class for PCA (default: None)')
-
-    model_dir = "./logs/visualization/celebA_2"
-    n_comp = 127
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    checkpoint_dir = './logs/celebA/Celeb-A/checkpoints/'
-    data_root = "/data2/celeba/img_align_celeba"
+    args = parser.parse_args()
 
     # load model
-    netG = sngan.SNGANGenerator128().to(device)
-    netD = customSNGANDiscriminator128().to(device)
+    netG = sngan.SNGANGenerator128().cuda()
+    netD = customSNGANDiscriminator128().cuda()
 
-    state_dict_G = torch.load(checkpoint_dir + 'netG/netG_100000_steps.pth')['model_state_dict']
-    state_dict_D = torch.load(checkpoint_dir + 'netD/netD_100000_steps.pth')['model_state_dict']
+    state_dict_G = torch.load(args.checkpoint_dir + 'netG/netG_100000_steps.pth')['model_state_dict']
+    state_dict_D = torch.load(args.checkpoint_dir + 'netD/netD_100000_steps.pth')['model_state_dict']
     netG.load_state_dict(state_dict_G)
     netD.load_state_dict(state_dict_D)
 
@@ -152,12 +150,12 @@ if __name__ == "__main__":
     netD.eval()
 
     # load dataset
-    dataset = celeba_dataset(root=data_root, size=128)
+    dataset = celeba_dataset(root=args.data_root, size=128)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=128, shuffle=True, num_workers=16)
 
     # extracting features
     _, train_Z, _, train_Z_bar, train_labels = extract_features(dataloader, netD, netG)
 
     # viz generation along different pca directions
-    plot_pca(train_Z, train_labels, model_dir, n_comp)
-    plot_linear_gen_on_images(train_Z, netG, model_dir)
+    plot_pca(train_Z, train_labels, args.model_dir, args.n_comp)
+    plot_linear_gen_on_images(train_Z, netG, args.model_dir)
