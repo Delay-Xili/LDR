@@ -53,7 +53,7 @@ CUDA_VISIBLE_DEVICES=0,1,2 python main.py --cfg experiments/ImageNet.yaml DATA.R
 
 Some hyper-parameters can be changed directly in the corresponding `xxx.yaml` file. 
 We run the experiments on an NVIDIA RTX 3090 with 24GB memory. 
-Adjust the ```CUDA_VISIBLE_DEVICES``` parameter based on your GPU memory.
+Adjust the ```CUDA_VISIBLE_DEVICES``` parameter based on available GPUs.
 
 
 ### Pre-trained Models
