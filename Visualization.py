@@ -97,9 +97,9 @@ def plot_linear_gen_on_images(train_Z, netG, model_dir, epoch='end'):
 
     range_value = 1
     lin_sample_num = 6
-    for j in [8, 18, 22]:
+    for j in range(len(components_each_class[0])):
         lin_gen_images = []
-        for select_image in [0, 11, 3]:
+        for select_image in range(10):
             lin_samples = np.linspace(0, range_value, lin_sample_num, endpoint=True)
             Z_lin = train_Z[select_image] + \
                     np.dot(lin_samples.reshape(-1, 1), components_each_class[0][j].reshape(1, -1))  # can modify 1 to lower value to get more clear results
