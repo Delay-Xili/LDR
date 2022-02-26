@@ -16,7 +16,7 @@ from utils.utils import extract_features, sort_dataset
 import random
 torch.multiprocessing.set_sharing_strategy('file_system')
 
-manualSeed = 2
+manualSeed = 1
 random.seed(manualSeed)  # python random seed
 torch.manual_seed(manualSeed)  # pytorch random seed
 np.random.seed(manualSeed)  # numpy random seed
