@@ -14,9 +14,9 @@ In particular, we propose a framework for closed-loop data transcription between
 distribution and a linear discriminative representation (LDR) in the feature space that consists of multiple independent 
 multi-dimensional linear subspaces. This new framework unifies the concepts and benefits of auto-encoding (AE) and 
 generative adversarial networks (GAN). It naturally extends AE and GAN concepts to the setting of learning a discriminative 
-and generative representation for multi-class, high-dimensional real-world data. Our extensive experiments on many benchmark 
+and generative representation for multi-class, high-dimensional, real-world data. Our extensive experiments on many benchmark 
 image datasets demonstrate tremendous potential of this new closed-loop formulation: under fair comparison, visual quality 
-of the learned decoder and classification performance of the encoder is competitive and often better than existing methods 
+of the learned decoder and classification performance of the encoder are competitive and often better than existing methods 
 based on GAN, VAE, or a combination of both. We hope that this repository serves as a reproducible baseline for future 
 research in this area. 
 
