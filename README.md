@@ -21,7 +21,7 @@ based on GAN, VAE, or a combination of both. We hope that this repository serves
 research in this area. 
 
 <p align="center">
-<img src="fig/framework.png"  width="800">
+<img src="fig/framework.png"  width="600">
 </p>
 
 The encoder *f* has dual roles: it learns an
