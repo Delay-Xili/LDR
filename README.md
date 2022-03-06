@@ -1,14 +1,14 @@
 # LDR — Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction
 
 This repository contains the official PyTorch implementation of the paper: 
-[Xili Dai](https://github.com/Delay-Xili), [Shengbang Tong](https://tsb0601.github.io/petertongsb/), 
+[Xili Dai](https://delay-xili.github.io/), [Shengbang Tong](https://tsb0601.github.io/petertongsb/), 
 Mingyang Li, [Ziyang Wu](https://robinwu218.github.io/), [Michael Psenka](https://www.michaelpsenka.io/), 
 [Kwan Ho Ryan Chan](https://ryanchankh.github.io/), [Pengyuan Zhai](https://billyzz.github.io/), 
 [Yaodong Yu](https://yaodongyu.github.io/), [Xiaojun Yuan](https://yuan-xiaojun.github.io/Yuan-Xiaojun/), 
 [Heung Yeung Shum](https://www.microsoft.com/en-us/research/people/hshum/), [Yi Ma](https://people.eecs.berkeley.edu/~yima/). 
 ["Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction."](https://arxiv.org/abs/2111.06636).
 
-## Introduction
+## What is LDR? 
 This work proposes a new computational framework for learning a structured generative model for real-world datasets. 
 In particular, we propose a framework for closed-loop data transcription between a multi-class, high-dimensional data 
 distribution and a linear discriminative representation (LDR) in the feature space that consists of multiple independent 
@@ -19,6 +19,17 @@ image datasets demonstrate tremendous potential of this new closed-loop formulat
 of the learned decoder and classification performance of the encoder are competitive and often better than existing methods 
 based on GAN, VAE, or a combination of both. We hope that this repository serves as a reproducible baseline for future 
 research in this area. 
+
+<p align="center">
+<img src="fig/framework.png"  width="400">
+</p>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+The encoder *f* has dual roles: it learns an
+LDR *z* for the data *x* via maximizing the rate reduction of *z* and it is also a “feedback sensor” for
+any discrepancy between the data *x* and the decoded \(\hat{x}\). The decoder *g* also has dual roles: it is a
+“controller” that corrects the discrepancy between *x* and \(\hat{x}\) and it also aims to minimize the overall
+coding rate for the learned LDR.
 
 ## Reproducing Results
 
@@ -106,3 +117,7 @@ If you find LDR useful in your research, please consider citing:
   year={2021}
 }
 ```
+
+### License
+
+See [LICENSE](LICENSE) for details.
