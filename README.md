@@ -8,7 +8,7 @@ Mingyang Li, [Ziyang Wu](https://robinwu218.github.io/), [Michael Psenka](https:
 [Heung Yeung Shum](https://www.microsoft.com/en-us/research/people/hshum/), [Yi Ma](https://people.eecs.berkeley.edu/~yima/). 
 ["Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction."](https://arxiv.org/abs/2111.06636).
 
-## What is LDR? 
+## Introduction
 This work proposes a new computational framework for learning a structured generative model for real-world datasets. 
 In particular, we propose a framework for closed-loop data transcription between a multi-class, high-dimensional data 
 distribution and a linear discriminative representation (LDR) in the feature space that consists of multiple independent 
@@ -21,14 +21,13 @@ based on GAN, VAE, or a combination of both. We hope that this repository serves
 research in this area. 
 
 <p align="center">
-<img src="fig/framework.png"  width="400">
+<img src="fig/framework.png"  width="800">
 </p>
 
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
 The encoder *f* has dual roles: it learns an
 LDR *z* for the data *x* via maximizing the rate reduction of *z* and it is also a “feedback sensor” for
-any discrepancy between the data *x* and the decoded \(\hat{x}\). The decoder *g* also has dual roles: it is a
-“controller” that corrects the discrepancy between *x* and \(\hat{x}\) and it also aims to minimize the overall
+any discrepancy between the data *x* and the decoded \hat{x}. The decoder *g* also has dual roles: it is a
+“controller” that corrects the discrepancy between *x* and \hat{x} and it also aims to minimize the overall
 coding rate for the learned LDR.
 
 ## Reproducing Results
