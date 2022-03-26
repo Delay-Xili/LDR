@@ -1,4 +1,4 @@
-# LDR — Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction
+# CTRL — Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction
 
 This repository contains the official PyTorch implementation of the paper: 
 [Xili Dai](https://delay-xili.github.io/), [Shengbang Tong](https://tsb0601.github.io/petertongsb/), 
@@ -11,7 +11,7 @@ Mingyang Li, [Ziyang Wu](https://robinwu218.github.io/), [Michael Psenka](https:
 ## Introduction
 This work proposes a new computational framework for learning a structured generative model for real-world datasets. 
 In particular, we propose a framework for closed-loop data transcription between a multi-class, high-dimensional data 
-distribution and a linear discriminative representation (LDR) in the feature space that consists of multiple independent 
+distribution and a linear discriminative representation (CTRL) in the feature space that consists of multiple independent 
 multi-dimensional linear subspaces. This new framework unifies the concepts and benefits of auto-encoding (AE) and 
 generative adversarial networks (GAN). It naturally extends AE and GAN concepts to the setting of learning a discriminative 
 and generative representation for multi-class, high-dimensional, real-world data. Our extensive experiments on many benchmark 
@@ -39,8 +39,8 @@ For ease of reproducibility, we suggest you install `Miniconda` (or `Anaconda` i
 ```bash
 git clone https://github.com/Delay-Xili/LDR
 cd LDR
-conda create -y -n ldr
-source activate ldr
+conda create -y -n clt
+source activate clt
 conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
 pip install git+https://github.com/kwotsin/mimicry.git
 mkdir data logs
@@ -106,7 +106,7 @@ CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg experiments/cifar10.yaml --ckpt_
 
 ## Citation
 
-If you find LDR useful in your research, please consider citing:
+If you find CLT useful in your research, please consider citing:
 
 ```
 @article{dai2021closed,
