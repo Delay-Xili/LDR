@@ -110,10 +110,16 @@ If you find CLT useful in your research, please consider citing:
 
 ```
 @article{dai2021closed,
-  title={Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction},
+  title={CTRL: Closed-Loop Transcription to an LDR via Minimaxing Rate Reduction},
   author={Dai, Xili and Tong, Shengbang and Li, Mingyang and Wu, Ziyang and Chan, Kwan Ho Ryan and Zhai, Pengyuan and Yu, Yaodong and Psenka, Michael and Yuan, Xiaojun and Shum, Heung Yeung and others},
-  journal={arXiv preprint arXiv:2111.06636},
-  year={2021}
+  journal = {Entropy},
+  volume = {24},
+  year = {2022},
+  number = {4},
+  article-number = {456},
+  url = {https://www.mdpi.com/1099-4300/24/4/456},
+  issn = {1099-4300},
+  doi = {10.3390/e24040456}
 }
 ```
 
