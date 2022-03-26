@@ -6,7 +6,7 @@ Mingyang Li, [Ziyang Wu](https://robinwu218.github.io/), [Michael Psenka](https:
 [Kwan Ho Ryan Chan](https://ryanchankh.github.io/), [Pengyuan Zhai](https://billyzz.github.io/), 
 [Yaodong Yu](https://yaodongyu.github.io/), [Xiaojun Yuan](https://yuan-xiaojun.github.io/Yuan-Xiaojun/), 
 [Heung Yeung Shum](https://www.microsoft.com/en-us/research/people/hshum/), [Yi Ma](https://people.eecs.berkeley.edu/~yima/). 
-["Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction."](https://arxiv.org/abs/2111.06636).
+["Closed-Loop Data Transcription to an LDR via Minimaxing Rate Reduction."](https://www.mdpi.com/1099-4300/24/4/456). Special Issue "Information Theory and Machine Learning" of Entropy 
 
 ## Introduction
 This work proposes a new computational framework for learning a structured generative model for real-world datasets. 
