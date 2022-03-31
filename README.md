@@ -78,7 +78,7 @@ You can download our trained models from the following links:
 | STL-10   | sngan48     | [TBD](https://drive.google.com/drive/folders/1V4fsMTUdG-fYOwsY7oW5zBR_rwJY1vcn?usp=sharing)    |
 | CelebA   | sngan128    | [link](https://drive.google.com/drive/folders/1GXUsZAYDi3GnckE9KxykHWtRjX7qFuFd?usp=sharing)    |
 | LSUN     | sngan128    | [link](https://drive.google.com/drive/folders/10lqlLxP85-uBt7LAEOs_zEb7Yt7lON_u?usp=sharing)    |
-| ImageNet | sngan128    | [TBD](https://drive.google.com/drive/folders/11kikjh2sSgX7OeUxLOCXr-CsTuzMoz6K?usp=sharing)    |
+| ImageNet | sngan128    | [link](https://drive.google.com/drive/folders/11kikjh2sSgX7OeUxLOCXr-CsTuzMoz6K?usp=sharing)    |
 
 Each link includes the corresponding results, which consists of three items: checkpoints, images, and data. <br>
 **checkpoints**: including all saved checkpoint files of the generator and discriminator during the training.<br>
