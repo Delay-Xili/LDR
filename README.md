@@ -74,7 +74,7 @@ You can download our trained models from the following links:
 | Datasets | Models      | Results     |
 | :------: | :---------: | :---------: |
 | MNIST    | mini dcgan  | [link](https://drive.google.com/drive/folders/1-eu2qDkF91Bd0RfsCc1YSx9X33SD-Ewy?usp=sharing)    |
-| TMNIST   | mini dcgan  | [TBD]()     |
+| TMNIST   | mini dcgan  | [link](https://drive.google.com/drive/folders/18p6c7WfHuYZG45EW1Nh3n91LcwpNWbfi?usp=sharing)    |
 | CIFAR-10 | mini dcgan  | [link](https://drive.google.com/drive/folders/1Il2DlJ4KVk6UCa7hgdp5IPu2HDFO3Iz6?usp=sharing)    |
 | CIFAR-10 | sngan32     | [TBD](https://drive.google.com/drive/folders/1Il2DlJ4KVk6UCa7hgdp5IPu2HDFO3Iz6?usp=sharing)     |
 | STL-10   | sngan48     | [TBD](https://drive.google.com/drive/folders/1V4fsMTUdG-fYOwsY7oW5zBR_rwJY1vcn?usp=sharing)     |
