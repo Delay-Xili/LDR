@@ -2,11 +2,26 @@
 import torchvision.transforms as transforms
 import torch.utils.data as data
 import torch
+import random
 import glob
 import PIL
 import torchvision.datasets as datasets
+import torchvision.transforms.functional as F
 from torch_mimicry.datasets.data_utils import load_dataset
 from typing import Any, Tuple
+
+
+class MyAffineTransform:
+    """Transform by one of the ways."""
+    '''Choice:[angle, scale]'''
+
+    def __init__(self, choices):
+        self.choices = choices
+
+    def __call__(self, x):
+        choice = random.choice(self.choices)
+        x = F.affine(x, angle=choice[0], scale=choice[1], translate=[0,0], shear=0)
+        return x
 
 
 def infiniteloop(dataloader):
@@ -58,6 +73,15 @@ def get_dataloader(data_name, root, batch_size, num_workers):
                     transforms.ToTensor(),
                     transforms.Normalize(0.5, 0.5)])
         dataset = datasets.MNIST(root=root, train=True, download=True, transform=transform)
+
+    elif data_name == 'TMNIST':
+        transform = transforms.Compose(
+                    [transforms.Resize(32),
+                    transforms.ToTensor(),
+                    MyAffineTransform(choices=[[0, 1], [0, 1.5], [0, 0.5], [-45, 1], [45, 1]]),
+                    transforms.Normalize(0.5, 0.5)])
+        dataset = datasets.MNIST(root=root, train=True,
+                                    download=True, transform=transform)
 
     elif data_name == 'imagenet_128':
         dataset = datasets.ImageFolder(root,
