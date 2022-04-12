@@ -141,7 +141,7 @@ def get_models(data_name, device):
         netG, netD = get_cifar_model()
         netG = nn.DataParallel(netG.to(device))
         netD = nn.DataParallel(netD.to(device))
-    elif data_name == 'mnist':
+    elif data_name in ['mnist', 'TMNIST']:
         netG = GeneratorMNIST().to(device)
         netG.apply(weights_init_mnist_model)
         netG = nn.DataParallel(netG)

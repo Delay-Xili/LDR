@@ -5,7 +5,7 @@ CUDNN:
 
 DATA:
   ROOT: './data/'  # change to your own data directory
-  DATASET: 'mnist'  # 'TMNIST' or 'mnist'
+  DATASET: 'TMNIST'  # 'TMNIST' or 'mnist'
 
 MODEL:
   NUM_CLASSES: 10

@@ -54,6 +54,7 @@ More installation details can be found [here](https://mimicry.readthedocs.io/en/
 To retrain the neural network from scratch on your own machine, execute the following commands 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/mnist.yaml
+CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/mnist.yaml DATA.DATASET TMNIST LOG_DIR logs/tmnist
 CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/cifar10.yaml
 CUDA_VISIBLE_DEVICES=0,1 python main.py --cfg experiments/stl10.yaml DATA.ROOT pth/to/the/dataset
 CUDA_VISIBLE_DEVICES=0,1,2 python main.py --cfg experiments/CelebA.yaml DATA.ROOT pth/to/the/dataset
@@ -73,9 +74,10 @@ You can download our trained models from the following links:
 | Datasets | Models      | Results     |
 | :------: | :---------: | :---------: |
 | MNIST    | mini dcgan  | [link](https://drive.google.com/drive/folders/1-eu2qDkF91Bd0RfsCc1YSx9X33SD-Ewy?usp=sharing)    |
+| TMNIST   | mini dcgan  | [TBD]()     |
 | CIFAR-10 | mini dcgan  | [link](https://drive.google.com/drive/folders/1Il2DlJ4KVk6UCa7hgdp5IPu2HDFO3Iz6?usp=sharing)    |
 | CIFAR-10 | sngan32     | [TBD](https://drive.google.com/drive/folders/1Il2DlJ4KVk6UCa7hgdp5IPu2HDFO3Iz6?usp=sharing)     |
-| STL-10   | sngan48     | [TBD](https://drive.google.com/drive/folders/1V4fsMTUdG-fYOwsY7oW5zBR_rwJY1vcn?usp=sharing)    |
+| STL-10   | sngan48     | [TBD](https://drive.google.com/drive/folders/1V4fsMTUdG-fYOwsY7oW5zBR_rwJY1vcn?usp=sharing)     |
 | CelebA   | sngan128    | [link](https://drive.google.com/drive/folders/1GXUsZAYDi3GnckE9KxykHWtRjX7qFuFd?usp=sharing)    |
 | LSUN     | sngan128    | [link](https://drive.google.com/drive/folders/10lqlLxP85-uBt7LAEOs_zEb7Yt7lON_u?usp=sharing)    |
 | ImageNet | sngan128    | [link](https://drive.google.com/drive/folders/11kikjh2sSgX7OeUxLOCXr-CsTuzMoz6K?usp=sharing)    |
