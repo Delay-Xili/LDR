@@ -166,10 +166,10 @@ class GeneratorCIFAR(dcgan_base.DCGANBaseGenerator):
         super().__init__(nz=nz, ngf=ngf, bottom_width=bottom_width, **kwargs)
 
         self.main = nn.Sequential(
-            GBlock(nz, ngf * 8, hidden_channels=iden, upsample=False),
-            GBlock(ngf * 8, ngf * 4, hidden_channels=iden, upsample=True),
+            GBlock(nz, ngf * 4, hidden_channels=iden, upsample=False),
             GBlock(ngf * 4, ngf * 2, hidden_channels=iden, upsample=True),
-            nn.ConvTranspose2d(ngf * 2, 3, 4, 2, 1, bias=False),
+            GBlock(ngf * 2, ngf, hidden_channels=iden, upsample=True),
+            nn.ConvTranspose2d(ngf, 3, 4, 2, 1, bias=False),
             nn.Tanh()
         )
 
