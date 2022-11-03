@@ -53,9 +53,9 @@ More installation details can be found [here](https://mimicry.readthedocs.io/en/
 
 To retrain the neural network from scratch on your own machine, execute the following commands 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/mnist.yaml
-CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/mnist.yaml DATA.DATASET TMNIST LOG_DIR logs/tmnist
-CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/cifar10.yaml
+CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/mnist.yaml DATA.ROOT pth/to/the/dataset
+CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/tmnist.yaml DATA.ROOT pth/to/the/dataset
+CUDA_VISIBLE_DEVICES=0 python main.py --cfg experiments/cifar10.yaml DATA.ROOT pth/to/the/dataset
 CUDA_VISIBLE_DEVICES=0,1 python main.py --cfg experiments/stl10.yaml DATA.ROOT pth/to/the/dataset
 CUDA_VISIBLE_DEVICES=0,1,2 python main.py --cfg experiments/CelebA.yaml DATA.ROOT pth/to/the/dataset
 CUDA_VISIBLE_DEVICES=0,1,2 python main.py --cfg experiments/LSUN.yaml DATA.ROOT pth/to/the/dataset

@@ -396,7 +396,7 @@ class MCRTrainer(MUltiGPUTrainer):
                     errD.backward()
                     self.optD.step()
 
-                # Update Discriminator
+                # Update Generator
                 self.netG.zero_grad()
                 self.optG.zero_grad()
 
