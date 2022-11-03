@@ -105,6 +105,9 @@ CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg pth/to/mnist/result/config.yaml 
 CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg pth/to/cifar/result/config.yaml --ckpt_epochs 45000 EVAL.DATA_SAMPLE 1000
 ```
 
+MNIST classification accuracy: 97.69%, CIFAR-10 classification accuracy: 73.05%.
+
+
 
 ## Citation
 
