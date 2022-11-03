@@ -101,8 +101,8 @@ CUDA_VISIBLE_DEVICES=0 python evaluation.py --cfg experiments/cifar10.yaml EVAL.
 To test the accuracy of your learned discriminator, execute
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg experiments/mnist.yaml --ckpt_epochs 4500 EVAL.DATA_SAMPLE 1000
-CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg experiments/cifar10.yaml --ckpt_epochs 45000 EVAL.DATA_SAMPLE 1000
+CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg pth/to/mnist/result/config.yaml --ckpt_epochs 4500 EVAL.DATA_SAMPLE 1000
+CUDA_VISIBLE_DEVICES=0 python test_acc.py --cfg pth/to/cifar/result/config.yaml --ckpt_epochs 45000 EVAL.DATA_SAMPLE 1000
 ```
 
 
